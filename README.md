@@ -2,8 +2,7 @@
 A machine learning project for learning geospatial topology
 
 # Data preparation
-If you value your time, go for the dockerized version.
-Note there is a pre-built `geodata-vectorized.npz` under `files`, so you don't need to rebuild the training data.
+Note first that there are pre-built numpy archive files `geodata-vectorized.npz` under `files`, so you don't need to rebuild the training data. If you want to prepare the data yourself, or want to derive a different pipeline from it, I suggest you go for the dockerized version (if you value your time). The dockerized version uses a PostGIS database instance to implement an ETL process that does the heavy lifting. Afterwards it's mostly a question of converting to normalized numpy vectors that can be understood by machine learning frameworks and saving the data to numpy archives.
 
 ## Numpy archive description
 The numpy archive `geodata-vectorized.npz` under `files` contains vectors deserialized from well-known text geometries, using the [shapely](https://pypi.python.org/pypi/Shapely) library. They are re-serialized as a 3D tensor as a combination of real-valued and one-hot components:

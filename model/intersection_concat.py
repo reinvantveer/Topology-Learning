@@ -1,12 +1,12 @@
 import os
+import numpy as np
+
 from datetime import datetime
 from shutil import copyfile
-
-import numpy as np
 from keras import Input
 from keras.callbacks import TensorBoard, EarlyStopping
 from keras.engine import Model
-from keras.layers import LSTM, Dense, concatenate, Reshape, RepeatVector, TimeDistributed, LeakyReLU
+from keras.layers import LSTM, Dense, concatenate, RepeatVector, TimeDistributed
 from keras.optimizers import Adam
 from slackclient import SlackClient
 

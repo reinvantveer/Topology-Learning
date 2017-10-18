@@ -27,7 +27,7 @@ univariate = np.random.randint(low=1, high=20, size=(TRAINING_SIZE, 1, 1))
 
 inputs = Input(name='Input', shape=(max_points, SEQ_LEN))
 model = LSTM(SEQ_LEN, return_sequences=True)(inputs)
-model = TimeDistributed(Dense(2))(model)
+model = Dense(2)(model)
 model = Model(inputs, model)
 model.compile(loss=univariate_gaussian_loss, optimizer=Adam(lr=0.001))
 model.summary()
@@ -35,7 +35,7 @@ model.summary()
 callbacks = [
     DecypherAll(lambda x: str(x)),
     TensorBoard(log_dir='./tensorboard_log/' + TIMESTAMP + ' ' + SCRIPT_NAME, write_graph=False),
-    EarlyStopping(patience=40, min_delta=1e-3)
+    EarlyStopping(patience=40, min_delta=1e-4)
 ]
 
 history = model.fit(x=univariate,

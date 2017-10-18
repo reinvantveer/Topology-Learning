@@ -7,10 +7,10 @@ from keras.layers import LSTM, TimeDistributed, Dense
 from keras.optimizers import Adam
 
 from topoml_util.ConsoleLogger import DecypherAll
-from topoml_util.geom_loss import r3_univariate_gaussian_loss
+from topoml_util.geom_loss import univariate_gaussian_loss
 
 TIMESTAMP = str(datetime.now()).replace(':', '.')
-EPOCHS = 60
+EPOCHS = 200
 BATCH_SIZE = 100
 TRAINING_SIZE = 50000
 TRAIN_VALIDATE_SPLIT = 0.2
@@ -24,7 +24,7 @@ inputs = Input(name='Input', shape=(max_points, GEO_VECTOR_LEN))
 model = LSTM(GEO_VECTOR_LEN, return_sequences=True)(inputs)
 model = TimeDistributed(Dense(GEO_VECTOR_LEN))(model)
 model = Model(inputs, model)
-model.compile(loss=r3_univariate_gaussian_loss, optimizer=Adam(lr=0.001))
+model.compile(loss=univariate_gaussian_loss, optimizer=Adam(lr=0.001))
 model.summary()
 
 my_callback = DecypherAll(lambda x: str(x))

@@ -73,10 +73,13 @@ Calculate the distance between the centroids (of two polygons) in meters, expres
 Approximates the distance between two polygons in meters, expressed as a single gaussian. This is an approximation of a vanilla distance query such as [PostGIS:ST_distance](http://postgis.net/docs/ST_Distance.html). If the polygons intersect, the distance is 0. Converges in about 25 epochs to centimeter-level precision. Intersecting geometries do not converge to exactly 0, but to levels within centimeters deviation.
 
 
-## Intersection auto-encoder
+## Intersection sequence-to-sequence auto-encoder
 
 ### `intersection.py` 
 Approximates the intersection of two geometries into a new geometry. Work in progress.
+
+### `intersection-concat.py` 
+Approximates the intersection of two concatenated geometries into a new geometry, a variation of the previous setup. Work in progress.
 
 ## Character-level model
 There is one model that uses a character-level sequence-to-sequence strategy to approximate intersections. Work in progress.

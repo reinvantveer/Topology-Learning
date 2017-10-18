@@ -10,6 +10,7 @@ from shutil import copyfile
 
 from topoml_util.ConsoleLogger import DecypherAll
 from topoml_util.geom_loss import univariate_gaussian_loss
+from topoml_util.slack_send import notify
 
 TIMESTAMP = str(datetime.now()).replace(':', '.')
 SCRIPT_NAME = os.path.basename(__file__)
@@ -22,12 +23,11 @@ TRAIN_VALIDATE_SPLIT = 0.2
 copyfile(__file__, 'configs/' + TIMESTAMP + ' ' + SCRIPT_NAME)
 
 univariate = np.random.randint(low=1, high=20, size=(TRAINING_SIZE, 1, 1))
-univariate = np.append(univariate, np.zeros(shape=(TRAINING_SIZE, 1, 1)), axis=2)
 (_, max_points, SEQ_LEN) = univariate.shape
 
 inputs = Input(name='Input', shape=(max_points, SEQ_LEN))
 model = LSTM(SEQ_LEN, return_sequences=True)(inputs)
-model = TimeDistributed(Dense(SEQ_LEN))(model)
+model = TimeDistributed(Dense(2))(model)
 model = Model(inputs, model)
 model.compile(loss=univariate_gaussian_loss, optimizer=Adam(lr=0.001))
 model.summary()
@@ -38,9 +38,12 @@ callbacks = [
     EarlyStopping(patience=40, min_delta=1e-3)
 ]
 
-model.fit(x=univariate,
-          y=univariate,
-          epochs=EPOCHS,
-          batch_size=BATCH_SIZE,
-          validation_split=TRAIN_VALIDATE_SPLIT,
-          callbacks=callbacks)
+history = model.fit(x=univariate,
+                    y=univariate,
+                    epochs=EPOCHS,
+                    batch_size=BATCH_SIZE,
+                    validation_split=TRAIN_VALIDATE_SPLIT,
+                    callbacks=callbacks).history
+
+notify(TIMESTAMP, SCRIPT_NAME, 'validation loss of ' + str(history['val_loss'][-1]))
+print('Done!')

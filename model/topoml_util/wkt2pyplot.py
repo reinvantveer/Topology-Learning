@@ -8,8 +8,8 @@ from shapely import wkt
 from matplotlib import pyplot as plt
 
 
-def wkt2pyplot(input_wkts, target_wkts=None, prediction_wkts=None, input_color='green', target_color='red',
-               pred_color='blue'):
+def wkt2pyplot(input_wkts, target_wkts=None, prediction_wkts=None,
+               input_color='green', target_color='red', pred_color='blue'):
     """
     Convert input, target and prediction well-known encoded geometry arrays to pyplot
     :param input_wkts: an array of input geometries, rendered in (standard) green

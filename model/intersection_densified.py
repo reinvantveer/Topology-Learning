@@ -59,10 +59,8 @@ model.compile(
     optimizer=OPTIMIZER)
 model.summary()
 
-tb_callback = TensorBoard(log_dir='./tensorboard_log/' + TIMESTAMP + ' ' + SCRIPT_NAME,
-                          histogram_freq=1, write_graph=True)
+tb_callback = TensorBoard(log_dir='./tensorboard_log/' + TIMESTAMP + ' ' + SCRIPT_NAME, write_graph=False)
 decypher = DecypherAll(gmm_size=GAUSSIAN_MIXTURE_COMPONENTS, plot_dir=PLOT_DIR)
-terminate_nan = TerminateOnNaN()
 
 model.fit(
     x=input_vectors,
@@ -70,7 +68,7 @@ model.fit(
     epochs=EPOCHS,
     batch_size=BATCH_SIZE,
     validation_split=TRAIN_VALIDATE_SPLIT,
-    callbacks=[decypher, tb_callback, terminate_nan])
+    callbacks=[decypher, tb_callback])
 
 slack_token = os.environ.get("SLACK_API_TOKEN")
 

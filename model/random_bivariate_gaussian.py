@@ -22,7 +22,7 @@ TRAIN_VALIDATE_SPLIT = 0.2
 # Archive the configuration
 copyfile(__file__, 'configs/' + TIMESTAMP + ' ' + SCRIPT_NAME)
 
-univariate = np.random.randint(low=1, high=20, size=(TRAINING_SIZE, 1, 2))
+univariate = np.random.randint(low=1, high=20, size=(TRAINING_SIZE, 1, 5))
 (_, max_points, SEQ_LEN) = univariate.shape
 
 inputs = Input(name='Input', shape=(max_points, SEQ_LEN))

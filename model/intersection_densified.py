@@ -8,7 +8,6 @@ from keras.callbacks import TensorBoard, EarlyStopping
 from keras.engine import Model
 from keras.layers import LSTM, Dense, Reshape
 from keras.optimizers import Adam
-from slackclient import SlackClient
 
 from topoml_util.GaussianMixtureLoss import GaussianMixtureLoss
 from topoml_util.GeoVectorizer import GEOM_TYPE_LEN, RENDER_LEN
@@ -74,7 +73,5 @@ history = model.fit(
     validation_split=TRAIN_VALIDATE_SPLIT,
     callbacks=callbacks).history
 
-notify(TIMESTAMP, SCRIPT_NAME, history[-1])
-
-print('Done!')
-
+notify(TIMESTAMP, SCRIPT_NAME, 'validation loss of ' + str(history['val_loss'][-1]))
+print(SCRIPT_NAME, 'finished successfully')

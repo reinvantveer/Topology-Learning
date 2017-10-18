@@ -96,13 +96,13 @@ callbacks = [
     EarlyStopping(patience=40, min_delta=0.001)
 ]
 
-model.fit(
+history = model.fit(
     x=[brt_vectors, osm_vectors],
     y=target_vectors,
     epochs=EPOCHS,
     batch_size=BATCH_SIZE,
     validation_split=TRAIN_VALIDATE_SPLIT,
-    callbacks=callbacks)
+    callbacks=callbacks).history
 
 notify(TIMESTAMP, SCRIPT_NAME, 'validation loss of ' + str(history['val_loss'][-1]))
 print(SCRIPT_NAME, 'finished successfully')

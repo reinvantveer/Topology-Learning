@@ -50,6 +50,7 @@ for brt, osm, target in zip(raw_brt_vectors, raw_osm_vectors, raw_target_vectors
         osm_vectors.append(osm)
         target_vectors.append(target)
 
+# data whitening
 means = localized_mean(target_vectors)
 brt_vectors = localized_normal(brt_vectors, means, 1e4)
 osm_vectors = localized_normal(osm_vectors, means, 1e4)

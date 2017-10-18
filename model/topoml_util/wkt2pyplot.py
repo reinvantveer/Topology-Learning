@@ -11,7 +11,7 @@ from matplotlib import pyplot as plt
 def wkt2pyplot(input_wkts, target_wkts=None, prediction_wkts=None,
                input_color='green', target_color='red', pred_color='blue'):
     """
-    Convert input, target and prediction well-known encoded geometry arrays to pyplot
+    Convert arrays of input, target and prediction well-known encoded geometry arrays to pyplot
     :param input_wkts: an array of input geometries, rendered in (standard) green
     :param target_wkts: optional array of target geometries, rendered in (standard) red
     :param prediction_wkts: optional array of prediction geometries, rendered in (standard) blue

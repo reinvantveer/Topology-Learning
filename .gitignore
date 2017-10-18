@@ -106,3 +106,5 @@ ENV/
 !/files/geodata_vectorized.npz
 /model/plots/*.png
 /model/configs/*.py
+!/model/configs/README.md
+!/model/configs/

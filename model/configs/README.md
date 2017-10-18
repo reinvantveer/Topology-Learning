@@ -1,2 +1,2 @@
 # Configurations
-This directory contains an archive of parameter (sweeps) configurations.
+This directory contains an archive of python test setup configurations.

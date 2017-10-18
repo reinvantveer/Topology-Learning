@@ -56,6 +56,7 @@ brt_vectors = localized_normal(brt_vectors, means, 1e4)
 osm_vectors = localized_normal(osm_vectors, means, 1e4)
 target_vectors = localized_normal(target_vectors, means, 1e4)
 
+# shape determination
 (data_points, brt_max_points, BRT_INPUT_VECTOR_LEN) = brt_vectors.shape
 (_, osm_max_points, OSM_INPUT_VECTOR_LEN) = osm_vectors.shape
 target_max_points = target_vectors.shape[1]

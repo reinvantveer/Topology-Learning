@@ -46,4 +46,4 @@ history = model.fit(x=univariate,
                     callbacks=callbacks).history
 
 notify(TIMESTAMP, SCRIPT_NAME, 'validation loss of ' + str(history['val_loss'][-1]))
-print('Done!')
+print(SCRIPT_NAME, 'finished successfully')

@@ -93,7 +93,7 @@ callbacks = [
                 plot_dir=PLOT_DIR,
                 input_slice=lambda x: x[:2],
                 target_slice=lambda x: x[2:3]),
-    EarlyStopping(patience=40)
+    EarlyStopping(patience=40, min_delta=0.001)
 ]
 
 model.fit(

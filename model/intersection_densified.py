@@ -4,7 +4,7 @@ from shutil import copyfile
 
 import numpy as np
 from keras import Input
-from keras.callbacks import TensorBoard, TerminateOnNaN
+from keras.callbacks import TensorBoard, EarlyStopping
 from keras.engine import Model
 from keras.layers import LSTM, Dense, Reshape
 from keras.optimizers import Adam
@@ -22,14 +22,14 @@ TIMESTAMP = str(datetime.now()).replace(':', '.')
 PLOT_DIR = './plots/' + TIMESTAMP + ' ' + SCRIPT_NAME
 DATA_FILE = '../files/densified_vectorized.npz'
 BATCH_SIZE = 1024
-GAUSSIAN_MIXTURE_COMPONENTS = 20
+GAUSSIAN_MIXTURE_COMPONENTS = 1
 DENSIFIED = 100
 TRAIN_VALIDATE_SPLIT = 0.1
 REPEAT_DEEP_ARCH = 2
 LSTM_SIZE = 128
 DENSE_SIZE = 64
 EPOCHS = 400
-OPTIMIZER = Adam(lr=1e-6, clipnorm=1.)
+OPTIMIZER = Adam(lr=1e-3, clipnorm=1.)
 
 # Archive the configuration
 copyfile(__file__, 'configs/' + TIMESTAMP + ' ' + SCRIPT_NAME)
@@ -59,8 +59,11 @@ model.compile(
     optimizer=OPTIMIZER)
 model.summary()
 
-tb_callback = TensorBoard(log_dir='./tensorboard_log/' + TIMESTAMP + ' ' + SCRIPT_NAME, write_graph=False)
-decypher = DecypherAll(gmm_size=GAUSSIAN_MIXTURE_COMPONENTS, plot_dir=PLOT_DIR)
+callbacks = [
+    TensorBoard(log_dir='./tensorboard_log/' + TIMESTAMP + ' ' + SCRIPT_NAME, write_graph=False),
+    DecypherAll(gmm_size=GAUSSIAN_MIXTURE_COMPONENTS, plot_dir=PLOT_DIR),
+    EarlyStopping(patience=40, min_delta=1e-3)
+]
 
 model.fit(
     x=input_vectors,
@@ -68,7 +71,7 @@ model.fit(
     epochs=EPOCHS,
     batch_size=BATCH_SIZE,
     validation_split=TRAIN_VALIDATE_SPLIT,
-    callbacks=[decypher, tb_callback])
+    callbacks=callbacks)
 
 slack_token = os.environ.get("SLACK_API_TOKEN")
 

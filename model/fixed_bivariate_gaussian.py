@@ -29,7 +29,6 @@ model = Dense(vector_len)(model)
 model = Model(inputs, model)
 model.compile(
     loss=bivariate_gaussian_loss,
-    metrics='mse',
     optimizer=Adam(lr=0.01))
 model.summary()
 
@@ -46,5 +45,5 @@ history = model.fit(x=input_2d,
           validation_split=TRAIN_VALIDATE_SPLIT,
           callbacks=callbacks).history
 
-notify(TIMESTAMP, SCRIPT_NAME, history[-1])
+notify(TIMESTAMP, SCRIPT_NAME, 'validation loss of ' + str(history['val_loss'][-1]))
 print('Done!')

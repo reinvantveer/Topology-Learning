@@ -26,7 +26,7 @@ BATCH_SIZE = 1024
 GAUSSIAN_MIXTURE_COMPONENTS = 1
 TRAIN_VALIDATE_SPLIT = 0.1
 REPEAT_DEEP_ARCH = 2
-LSTM_SIZE = 256
+LSTM_SIZE = 150
 DENSE_SIZE = 64
 EPOCHS = 400
 OPTIMIZER = Adam(lr=1e-3, clipnorm=1.)
@@ -71,6 +71,7 @@ osm_model = LSTM(osm_max_points * 2, activation='relu')(osm_inputs)
 
 concat = concatenate([brt_model, osm_model])
 model = RepeatVector(target_max_points)(concat)
+model = LSTM(LSTM_SIZE, activation='relu', return_sequences=True)(model)
 model = LSTM(LSTM_SIZE, activation='relu', return_sequences=True)(model)
 model = LSTM(LSTM_SIZE, activation='relu', return_sequences=True)(model)
 model = TimeDistributed(Dense(256, activation='relu'))(model)

@@ -16,6 +16,7 @@ from topoml_util.PyplotLogger import DecypherAll
 
 # To suppress tensorflow info level messages:
 # export TF_CPP_MIN_LOG_LEVEL=2
+from topoml_util.slack_send import notify
 
 SCRIPT_NAME = os.path.basename(__file__)
 TIMESTAMP = str(datetime.now()).replace(':', '.')
@@ -65,24 +66,15 @@ callbacks = [
     EarlyStopping(patience=40, min_delta=1e-3)
 ]
 
-model.fit(
+history = model.fit(
     x=input_vectors,
     y=target_vectors,
     epochs=EPOCHS,
     batch_size=BATCH_SIZE,
     validation_split=TRAIN_VALIDATE_SPLIT,
-    callbacks=callbacks)
+    callbacks=callbacks).history
 
-slack_token = os.environ.get("SLACK_API_TOKEN")
-
-if slack_token:
-    sc = SlackClient(slack_token)
-    sc.api_call(
-      "chat.postMessage",
-      channel="#machinelearning",
-      text="Session " + TIMESTAMP + ' ' + SCRIPT_NAME + " completed successfully")
-else:
-    print('No slack notification: no slack API token environment variable "SLACK_API_TOKEN" set.')
+notify(TIMESTAMP, SCRIPT_NAME, history[-1])
 
 print('Done!')
 

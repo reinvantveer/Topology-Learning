@@ -30,7 +30,7 @@ REPEAT_DEEP_ARCH = 2
 LSTM_SIZE = 128
 DENSE_SIZE = 64
 EPOCHS = 400
-OPTIMIZER = Adam(lr=1e-3, clipnorm=1.)
+OPTIMIZER = Adam(lr=1e-6, clipnorm=1.)
 
 # Archive the configuration
 copyfile(__file__, 'configs/' + TIMESTAMP + ' ' + SCRIPT_NAME)

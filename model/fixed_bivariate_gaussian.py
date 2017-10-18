@@ -1,20 +1,22 @@
 from datetime import datetime
 import numpy as np
+import os
 from keras import Input
-from keras.callbacks import TensorBoard
+from keras.callbacks import TensorBoard, EarlyStopping
 from keras.engine import Model
-from keras.layers import Dense, LSTM, LeakyReLU
+from keras.layers import Dense, LSTM
 from keras.optimizers import Adam
 
 from topoml_util.ConsoleLogger import DecypherAll
-from topoml_util.geom_loss import r3_bivariate_gaussian_loss
+from topoml_util.geom_loss import bivariate_gaussian_loss
+from topoml_util.slack_send import notify
 
 TIMESTAMP = str(datetime.now()).replace(':', '.')
-EPOCHS = 20
+SCRIPT_NAME = os.path.basename(__file__)
+EPOCHS = 200
 BATCH_SIZE = 512
 TRAINING_SIZE = 100000
 TRAIN_VALIDATE_SPLIT = 0.2
-tb_callback = TensorBoard(log_dir='./tensorboard_log/' + TIMESTAMP, histogram_freq=1, write_graph=True)
 
 input_2d = np.repeat([[[0.2, 15, 0, 0, 0]]], 11, axis=1)
 input_2d = np.repeat(input_2d, TRAINING_SIZE, axis=0)
@@ -26,16 +28,23 @@ model = LSTM(vector_len, return_sequences=True)(inputs)
 model = Dense(vector_len)(model)
 model = Model(inputs, model)
 model.compile(
-    loss=r3_bivariate_gaussian_loss,
+    loss=bivariate_gaussian_loss,
     metrics='mse',
     optimizer=Adam(lr=0.01))
 model.summary()
 
-my_callback = DecypherAll(lambda x: str(x))
+callbacks = [
+    TensorBoard(log_dir='./tensorboard_log/' + TIMESTAMP, write_graph=False),
+    DecypherAll(lambda x: str(x)),
+    EarlyStopping(patience=20)
+]
 
-model.fit(x=input_2d,
+history = model.fit(x=input_2d,
           y=input_2d,
           epochs=EPOCHS,
           batch_size=BATCH_SIZE,
           validation_split=TRAIN_VALIDATE_SPLIT,
-          callbacks=[my_callback, tb_callback])
+          callbacks=callbacks).history
+
+notify(TIMESTAMP, SCRIPT_NAME, history[-1])
+print('Done!')

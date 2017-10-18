@@ -17,6 +17,7 @@ from topoml_util.geom_scaler import localized_normal, localized_mean
 
 # To suppress tensorflow info level messages:
 # export TF_CPP_MIN_LOG_LEVEL=2
+from topoml_util.slack_send import notify
 
 SCRIPT_NAME = os.path.basename(__file__)
 TIMESTAMP = str(datetime.now()).replace(':', '.')
@@ -103,15 +104,5 @@ model.fit(
     validation_split=TRAIN_VALIDATE_SPLIT,
     callbacks=callbacks)
 
-slack_token = os.environ.get("SLACK_API_TOKEN")
-
-if slack_token:
-    sc = SlackClient(slack_token)
-    sc.api_call(
-        "chat.postMessage",
-        channel="#machinelearning",
-        text="Session " + TIMESTAMP + ' ' + SCRIPT_NAME + " completed successfully")
-else:
-    print('No slack notification: no slack API token environment variable "SLACK_API_TOKEN" set.')
-
-print('Done!')
+notify(TIMESTAMP, SCRIPT_NAME, 'validation loss of ' + str(history['val_loss'][-1]))
+print(SCRIPT_NAME, 'finished successfully')

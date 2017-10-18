@@ -22,8 +22,8 @@ TRAIN_VALIDATE_SPLIT = 0.2
 # Archive the configuration
 copyfile(__file__, 'configs/' + TIMESTAMP + ' ' + SCRIPT_NAME)
 
-univariate = np.random.randint(low=1, high=20, size=(TRAINING_SIZE, 1, 5))
-(_, max_points, SEQ_LEN) = univariate.shape
+bivariate = np.random.randint(low=1, high=20, size=(TRAINING_SIZE, 1, 5))
+(_, max_points, SEQ_LEN) = bivariate.shape
 
 inputs = Input(name='Input', shape=(max_points, SEQ_LEN))
 model = LSTM(SEQ_LEN, return_sequences=True)(inputs)
@@ -38,13 +38,12 @@ callbacks = [
     EarlyStopping(patience=40, min_delta=1e-3)
 ]
 
-history = model.fit(x=univariate,
-          y=univariate,
-          epochs=EPOCHS,
-          batch_size=BATCH_SIZE,
-          validation_split=TRAIN_VALIDATE_SPLIT,
-          callbacks=callbacks).history
+history = model.fit(x=bivariate,
+                    y=bivariate,
+                    epochs=EPOCHS,
+                    batch_size=BATCH_SIZE,
+                    validation_split=TRAIN_VALIDATE_SPLIT,
+                    callbacks=callbacks).history
 
-notify(TIMESTAMP, SCRIPT_NAME, history[-1])
-
-
+notify(TIMESTAMP, SCRIPT_NAME, 'validation loss of ' + str(history['val_loss'][-1]))
+print('Done!')

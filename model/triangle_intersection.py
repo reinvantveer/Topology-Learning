@@ -46,7 +46,7 @@ model = LSTM(LATENT_SIZE, activation='relu', return_sequences=True)(inputs)
 model = Dense(32, activation='relu')(model)
 model = LSTM(LATENT_SIZE, activation='relu', return_sequences=True)(model)
 model = Dense(32, activation='relu')(model)
-model = Dense(GEO_VECTOR_LEN)(model)
+model = Dense(17)(model)
 model = Model(inputs, model)
 
 loss = GaussianMixtureLoss(num_points=max_points, num_components=1).geom_gaussian_mixture_loss

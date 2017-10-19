@@ -1,4 +1,4 @@
-from topoml_util.geom_loss import r4_bivariate_gaussian
+from topoml_util.gaussian_loss import r4_bivariate_gaussian
 import numpy as np
 
 class GaussianMixtureLoss:

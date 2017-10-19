@@ -8,7 +8,7 @@ from keras.layers import Dense, Flatten
 from keras.optimizers import Adam
 
 from topoml_util.ConsoleLogger import DecypherAll
-from topoml_util.geom_loss import gaussian_1d_loss
+from topoml_util.gaussian_loss import univariate_gaussian_loss
 
 # To suppress tensorflow info level messages:
 # export TF_CPP_MIN_LOG_LEVEL=2
@@ -41,7 +41,7 @@ model = Dense(LATENT_SIZE, activation='relu')(model)
 model = Dense(2)(model)
 
 model = Model(inputs, model)
-model.compile(loss=gaussian_1d_loss, optimizer=OPTIMIZER)
+model.compile(loss=univariate_gaussian_loss, optimizer=OPTIMIZER)
 model.summary()
 
 tb_callback = TensorBoard(log_dir='./tensorboard_log/' + TIMESTAMP, histogram_freq=1, write_graph=True)

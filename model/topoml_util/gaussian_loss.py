@@ -77,11 +77,6 @@ def univariate_gaussian(true, pred):
     :param pred: values predicted with at least [mu, sigma]
     :return: probability density function
     """
-    if not true.shape == pred.shape:
-        print(
-            'Warning: truth', true.shape, 'and prediction tensors', pred.shape, 'do not have the same shape. The '
-            'outcome of the gaussian function may be unpredictable.')
-
     if not len(true.shape) == len(pred.shape):
         print(
             'Warning: dimensionality of truth (', len(true.shape), ') and prediction tensors (', len(pred.shape), ')do '

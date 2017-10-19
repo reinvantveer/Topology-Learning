@@ -1,7 +1,7 @@
 from keras import backend as K
 
 from topoml_util.GeoVectorizer import RENDER_LEN, GEOM_TYPE_LEN, ONE_HOT_LEN
-from topoml_util.geom_loss import bivariate_gaussian, univariate_gaussian
+from topoml_util.gaussian_loss import bivariate_gaussian, univariate_gaussian
 
 
 class GaussianMixtureLoss:

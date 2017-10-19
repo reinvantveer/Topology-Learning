@@ -12,7 +12,8 @@ from shutil import copyfile
 
 from topoml_util.LoggerCallback import EpochLogger
 from topoml_util.GeoVectorizer import GeoVectorizer
-from topoml_util.geom_loss import geom_gaussian_loss
+from topoml_util.GaussianMixtureLoss import GaussianMixtureLoss
+from topoml_util.slack_send import notify
 from topoml_util.wkt2pyplot import wkt2pyplot
 
 SCRIPT_NAME = os.path.basename(__file__)
@@ -26,7 +27,6 @@ OPTIMIZER = Adam(lr=1e-3, decay=2e-5)
 
 # Archive the configuration
 copyfile(__file__, 'configs/' + TIMESTAMP + ' ' + SCRIPT_NAME)
-
 
 loaded = np.load(DATA_FILE)
 training_vectors = loaded['point_sequence']
@@ -46,26 +46,28 @@ model = LSTM(LATENT_SIZE, activation='relu', return_sequences=True)(model)
 model = Dense(32, activation='relu')(model)
 model = Dense(GEO_VECTOR_LEN)(model)
 model = Model(inputs, model)
-model.compile(loss=geom_gaussian_loss, optimizer=OPTIMIZER)
+
+loss = GaussianMixtureLoss(num_points=max_points, num_components=1)
+model.compile(loss=GaussianMixtureLoss.geom_gaussian_mixture_loss, optimizer=OPTIMIZER)
 model.summary()
 
-tb_callback = TensorBoard(log_dir='./tensorboard_log/' + TIMESTAMP)
-epoch_callback = EpochLogger(
-    input_func=GeoVectorizer.decypher,
-    target_func=GeoVectorizer.decypher,
-    predict_func=GeoVectorizer.decypher,
-    aggregate_func=wkt2pyplot,
-    stdout=True
-)
+callbacks = [
+    TensorBoard(log_dir='./tensorboard_log/' + TIMESTAMP, write_graph=False),
+    EpochLogger(
+        input_func=GeoVectorizer.decypher,
+        target_func=GeoVectorizer.decypher,
+        predict_func=GeoVectorizer.decypher,
+        aggregate_func=wkt2pyplot,
+        stdout=True)
+]
 
-model.fit(
+history = model.fit(
     x=training_vectors,
     y=target_vectors,
     epochs=EPOCHS,
     batch_size=BATCH_SIZE,
     validation_split=TRAIN_VALIDATE_SPLIT,
-    callbacks=[epoch_callback, tb_callback]
-)
+    callbacks=callbacks).history
 
 plot_sample = training_vectors[-10000:]
 prediction = model.predict(plot_sample)
@@ -75,4 +77,5 @@ triangle_vectors = plot_sample.reshape(10000, 6, 2)
 training_triangles = np.array([[Polygon(point_set[0:3]).wkt, Polygon(point_set[3:]).wkt]
                                for point_set in triangle_vectors])
 
-print('Done!')
+notify(TIMESTAMP, SCRIPT_NAME, 'validation loss of ' + str(history['val_loss'][-1]))
+print(SCRIPT_NAME, 'finished successfully')

@@ -41,8 +41,8 @@ target_vectors = loaded['centroid_distance'][:, 0, :]
 
 inputs = Input(name='Input', shape=(max_points, GEO_VECTOR_LEN))
 # This can be a simple Dense layer of size 16 as well
-model = Flatten()(inputs)
-model = LSTM(LATENT_SIZE, activation='relu')(model)
+#model = Flatten()(inputs)
+model = LSTM(LATENT_SIZE, activation='relu')(inputs)
 model = Dense(2)(model)
 
 model = Model(inputs, model)

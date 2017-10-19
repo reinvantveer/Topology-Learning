@@ -61,7 +61,7 @@ callbacks = [
         predict_func=lambda x: [Point(point).wkt for point in GeoVectorizer(gmm_size=COMPONENTS).decypher_gmm_geom(x)],
         aggregate_func=lambda x: save_plot(x, timestamp=str(datetime.now()).replace(':', '.')),
         stdout=True),
-    EarlyStopping(patience=40, min_delta=1e-3)
+    EarlyStopping(patience=40, min_delta=1e-4)
 ]
 
 history = model.fit(

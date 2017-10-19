@@ -49,8 +49,8 @@ model = Dense(32, activation='relu')(model)
 model = Dense(GEO_VECTOR_LEN)(model)
 model = Model(inputs, model)
 
-loss = GaussianMixtureLoss(num_points=max_points, num_components=1)
-model.compile(loss=GaussianMixtureLoss.geom_gaussian_mixture_loss, optimizer=OPTIMIZER)
+loss = GaussianMixtureLoss(num_points=max_points, num_components=1).geom_gaussian_mixture_loss
+model.compile(loss=loss, optimizer=OPTIMIZER)
 model.summary()
 
 callbacks = [

@@ -225,13 +225,15 @@ class GeoVectorizer:
 
         return wkt + wkt_end[geom_type]
 
-    def decypher_gmm_geom(self, vector, sample_size=10):
+    def decypher_gmm_geom(self, vector, sample_size=10, use_covariance=False):
         """
         Decyphers a encoded 2d vector of bivariate gaussian mixture model component(s) parameters and one-hot vectors
         back to a wkt geometry
         :param vector: rank 2 input vector of sequences with parameters for a gaussian mixture model, two one-hot
             vectors for geometry type and 'pen state' or stop indicator, all as a concatenated sequence
         :param sample_size: number of points to sample from each mixture component
+        :param use_covariance: whether or not to apply the covariance matrix in sampling. Useful for monitoring the
+                                distribution of the data, but can create a very cloudy result
         :return a list of max_points * sample size sampled 2d points
         """
         one_hot_start = (self.gmm_size * 6)
@@ -255,10 +257,11 @@ class GeoVectorizer:
             [sigma_x, sigma_y] = np.abs([sigma_x, sigma_y])
             rho = np.tanh(rho)
 
+            # use of the covariance matrix is standard off, since it tends to cloud the output too much
+            covariance = [[sigma_x, rho], [rho, sigma_y]] if use_covariance else [[0, 0], [0, 0]]
             sampled = np.random.multivariate_normal(
                 mean=[mean_x, mean_y],
-                cov=[[sigma_x, rho], [rho, sigma_y]],  # TODO: tune this to decent values
-                # cov=[[0, 0], [0, 0]],
+                cov=covariance,
                 size=sample_size)
             # sample.append(np.repeat([mean_x, mean_y], 10))
             sample.append(sampled)

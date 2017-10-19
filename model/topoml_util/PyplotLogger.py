@@ -7,7 +7,7 @@ import random
 from datetime import datetime
 import numpy as np
 
-from topoml_util.GeoVectorizer import GeoVectorizer
+from GeoVectorizer import GeoVectorizer
 
 pp = pprint.PrettyPrinter()
 

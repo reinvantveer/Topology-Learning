@@ -1,7 +1,7 @@
 import os
 import pprint
 from shapely.geometry import Point
-from topoml_util.wkt2pyplot import wkt2pyplot
+from topoml_util.wkt2pyplot import wkt2pyplot, save_plot
 from keras.callbacks import Callback
 import random
 from datetime import datetime
@@ -53,22 +53,21 @@ class DecypherAll(Callback):
 
         print('\nPlotting output for %i inputs, targets and predictions...' % len(predictions))
 
-        for (input, target, prediction) in zip(input_samples, target_samples, predictions):
+        for (input_vectors, target_vectors, prediction_vectors) in zip(input_samples, target_samples, predictions):
             timestamp = str(datetime.now()).replace(':', '.')
 
             if self.stdout:
                 print('Input:')
-                pp.pprint(input)
+                pp.pprint(input_vectors)
                 print('Target:')
-                pp.pprint(target)
+                pp.pprint(target_vectors)
                 print('Prediction:')
-                pp.pprint(prediction)
+                pp.pprint(prediction_vectors)
 
-            input_polys = [GeoVectorizer.decypher(poly) for poly in input]
-            target_polys = [GeoVectorizer.decypher(target[0])]
+            input_polys = [GeoVectorizer.decypher(poly) for poly in input_vectors]
+            target_polys = [GeoVectorizer.decypher(target_vectors[0])]
             prediction_points = [Point(point).wkt for point in
-                                 GeoVectorizer(gmm_size=self.gmm_size).decypher_gmm_geom(prediction[0], 500)]
+                                 GeoVectorizer(gmm_size=self.gmm_size).decypher_gmm_geom(prediction_vectors[0], 500)]
 
-            plt, fig, ax = wkt2pyplot(input_polys, target_polys, prediction_points)
-            plt.savefig(self.plot_dir + '/plt_' + timestamp + '.png')
-            plt.close('all')
+            geoms = input_polys, target_polys, prediction_points
+            save_plot(self.plot_dir, geoms, timestamp)

@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import matplotlib
 import os
 
@@ -57,7 +59,7 @@ def wkt2pyplot(input_wkts, target_wkts=None, prediction_wkts=None,
         for geom in prediction_geoms:
             if geom.geom_type == 'Point':
                 plt.plot(geom.coords.xy[0][0], geom.coords.xy[1][0],
-                         marker='o', color=pred_color, alpha=0.4, linewidth=0)
+                         marker='o', color=pred_color, alpha=0.1, linewidth=0)
             elif geom.type == 'Polygon':
                 collection = matplotlib.collections.PatchCollection([matplotlib.patches.Polygon(geom.boundary.coords)],
                                                                     alpha=0.4, linewidth=1)
@@ -67,3 +69,9 @@ def wkt2pyplot(input_wkts, target_wkts=None, prediction_wkts=None,
     plt.axis('auto')
 
     return plt, fig, ax
+
+
+def save_plot(geoms, plot_dir='plots', timestamp=None):
+    plt, fig, ax = wkt2pyplot(*geoms)
+    plt.savefig(plot_dir + '/plt_' + timestamp + '.png')
+    plt.close('all')

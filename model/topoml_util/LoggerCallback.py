@@ -39,6 +39,4 @@ class EpochLogger(Callback):
 
             if self.aggregate_func:
                 self.aggregate_func(
-                    self.input_func(input),
-                    self.target_func(target),
-                    self.predict_func(prediction))
+                    (self.input_func(input), self.target_func(target), self.predict_func(prediction)))

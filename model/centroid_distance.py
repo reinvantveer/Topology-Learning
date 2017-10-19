@@ -2,7 +2,7 @@ from datetime import datetime
 import os
 import numpy as np
 from keras import Input
-from keras.callbacks import TensorBoard
+from keras.callbacks import TensorBoard, EarlyStopping
 from keras.engine import Model
 from keras.layers import Dense, Flatten, LSTM
 from keras.optimizers import Adam
@@ -49,15 +49,18 @@ model = Model(inputs, model)
 model.compile(loss=univariate_gaussian_loss, optimizer=OPTIMIZER)
 model.summary()
 
-tb_callback = TensorBoard(log_dir='./tensorboard_log/' + TIMESTAMP, write_graph=False)
-my_callback = DecypherAll(lambda x: str(x))
+callbacks = [
+    TensorBoard(log_dir='./tensorboard_log/' + TIMESTAMP + ' ' + SCRIPT_NAME, write_graph=False),
+    DecypherAll(lambda x: str(x)),
+    EarlyStopping(patience=40, min_delta=1e-3)
+]
 
 history = model.fit(x=training_vectors,
                     y=target_vectors,
                     epochs=EPOCHS,
                     batch_size=BATCH_SIZE,
                     validation_split=TRAIN_VALIDATE_SPLIT,
-                    callbacks=[my_callback, tb_callback]).history
+                    callbacks=callbacks).history
 
 prediction = model.predict(training_vectors[0:1000])
 error = np.sum(np.abs(prediction[:, 0] - target_vectors[0:1000, 0])) / 1000

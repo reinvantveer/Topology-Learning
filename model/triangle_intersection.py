@@ -4,7 +4,7 @@ from shapely.wkt import loads
 from shapely.geometry import Polygon
 import numpy as np
 from keras import Input
-from keras.callbacks import TensorBoard
+from keras.callbacks import TensorBoard, EarlyStopping
 from keras.engine import Model
 from keras.layers import LSTM, Dense
 from keras.optimizers import Adam
@@ -52,13 +52,14 @@ model.compile(loss=GaussianMixtureLoss.geom_gaussian_mixture_loss, optimizer=OPT
 model.summary()
 
 callbacks = [
-    TensorBoard(log_dir='./tensorboard_log/' + TIMESTAMP, write_graph=False),
+    TensorBoard(log_dir='./tensorboard_log/' + TIMESTAMP + ' ' + SCRIPT_NAME, write_graph=False),
     EpochLogger(
         input_func=GeoVectorizer.decypher,
         target_func=GeoVectorizer.decypher,
         predict_func=GeoVectorizer.decypher,
         aggregate_func=wkt2pyplot,
-        stdout=True)
+        stdout=True),
+    EarlyStopping(patience=40, min_delta=1e-3)
 ]
 
 history = model.fit(

@@ -33,10 +33,12 @@ training_vectors = loaded['point_sequence']
 target_vectors = loaded['intersection_geoms']
 (set_size, _) = training_vectors.shape
 training_vectors = np.reshape(training_vectors, (set_size, 1, 12))
-target_triangles = [GeoVectorizer.vectorize_wkt(triangle, 6)
-                    for triangle in training_vectors]
+
+# Densified setup
+# target_triangles = [GeoVectorizer.vectorize_wkt(triangle, 6)
+#                     for triangle in target_vectors]
 # triangles = [GeoVectorizer.interpolate(point_sequence, len(point_sequence) * 20)
-#                         for point_sequence in triangles]
+#                         for point_sequence in target_triangles]
 (_, max_points, GEO_VECTOR_LEN) = np.array(target_vectors).shape
 
 inputs = Input(shape=training_vectors.shape[1:])

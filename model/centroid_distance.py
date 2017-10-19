@@ -4,7 +4,7 @@ import numpy as np
 from keras import Input
 from keras.callbacks import TensorBoard
 from keras.engine import Model
-from keras.layers import Dense, Flatten
+from keras.layers import Dense, Flatten, LSTM
 from keras.optimizers import Adam
 from shutil import copyfile
 
@@ -42,7 +42,7 @@ target_vectors = loaded['centroid_distance'][:, 0, :]
 inputs = Input(name='Input', shape=(max_points, GEO_VECTOR_LEN))
 # This can be a simple Dense layer of size 16 as well
 model = Flatten()(inputs)
-model = Dense(LATENT_SIZE, activation='relu')(model)
+model = LSTM(LATENT_SIZE, activation='relu')(model)
 model = Dense(2)(model)
 
 model = Model(inputs, model)

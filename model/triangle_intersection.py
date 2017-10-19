@@ -1,6 +1,5 @@
 import os
 from datetime import datetime
-from shapely.wkt import loads
 from shapely.geometry import Polygon, Point
 import numpy as np
 from keras import Input

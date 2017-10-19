@@ -1,7 +1,7 @@
 import os
 import pprint
 from shapely.geometry import Point
-from .wkt2pyplot import save_plot
+from wkt2pyplot import save_plot
 from keras.callbacks import Callback
 import random
 from datetime import datetime

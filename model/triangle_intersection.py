@@ -19,11 +19,11 @@ from topoml_util.wkt2pyplot import wkt2pyplot
 SCRIPT_NAME = os.path.basename(__file__)
 TIMESTAMP = str(datetime.now()).replace(':', '.')
 DATA_FILE = '../files/triangles.npz'
-BATCH_SIZE = 2048
+BATCH_SIZE = 1024
 TRAIN_VALIDATE_SPLIT = 0.1
-LATENT_SIZE = 64
+LATENT_SIZE = 128
 EPOCHS = 400
-OPTIMIZER = Adam(lr=1e-3, decay=2e-5)
+OPTIMIZER = Adam(lr=1e-3)
 
 # Archive the configuration
 copyfile(__file__, 'configs/' + TIMESTAMP + ' ' + SCRIPT_NAME)

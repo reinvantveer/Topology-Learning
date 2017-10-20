@@ -9,7 +9,7 @@ from keras.optimizers import Adam
 from shutil import copyfile
 
 from topoml_util.ConsoleLogger import DecypherAll
-from topoml_util.geom_loss import univariate_gaussian_loss
+from topoml_util.gaussian_loss import univariate_gaussian_loss
 from topoml_util.slack_send import notify
 
 TIMESTAMP = str(datetime.now()).replace(':', '.')

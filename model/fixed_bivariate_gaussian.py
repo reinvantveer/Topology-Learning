@@ -8,7 +8,7 @@ from keras.layers import Dense, LSTM
 from keras.optimizers import Adam
 
 from topoml_util.ConsoleLogger import DecypherAll
-from topoml_util.geom_loss import bivariate_gaussian_loss
+from topoml_util.gaussian_loss import bivariate_gaussian_loss
 from topoml_util.slack_send import notify
 
 TIMESTAMP = str(datetime.now()).replace(':', '.')

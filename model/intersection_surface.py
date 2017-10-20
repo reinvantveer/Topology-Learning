@@ -18,11 +18,11 @@ from topoml_util.wkt2pyplot import wkt2pyplot
 # To suppress tensorflow info level messages:
 # export TF_CPP_MIN_LOG_LEVEL=2
 
-SCRIPT_VERSION = "0.0.1"
+SCRIPT_VERSION = "0.0.2"
 SCRIPT_NAME = os.path.basename(__file__)
 TIMESTAMP = str(datetime.now()).replace(':', '.')
 DATA_FILE = '../files/geodata_vectorized.npz'
-BATCH_SIZE = 8192
+BATCH_SIZE = 1024
 TRAIN_VALIDATE_SPLIT = 0.1
 LATENT_SIZE = 128
 EPOCHS = 400
@@ -108,5 +108,3 @@ for result in sorted_results[0:plot_samples]:
 
 notify(TIMESTAMP, SCRIPT_NAME, 'validation loss of ' + str(history['val_loss'][-1]))
 print(SCRIPT_NAME, 'finished successfully')
-
-print('Done!')

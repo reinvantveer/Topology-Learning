@@ -1,4 +1,4 @@
-VERSION = "0.01"
+VERSION = "0.02"
 
 import os
 from datetime import datetime
@@ -73,14 +73,6 @@ history = model.fit(
     batch_size=BATCH_SIZE,
     validation_split=TRAIN_VALIDATE_SPLIT,
     callbacks=callbacks).history
-
-plot_sample = training_vectors[-10000:]
-prediction = model.predict(plot_sample)
-intersecting_error = np.abs(prediction[:, 0] - target_vectors[-10000:])
-
-triangle_vectors = plot_sample.reshape(10000, 6, 2)
-training_triangles = np.array([[Polygon(point_set[0:3]).wkt, Polygon(point_set[3:]).wkt]
-                               for point_set in triangle_vectors])
 
 notify(TIMESTAMP, SCRIPT_NAME, 'validation loss of ' + str(history['val_loss'][-1]))
 print(SCRIPT_NAME, 'finished successfully')

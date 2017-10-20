@@ -16,14 +16,14 @@ from topoml_util.gaussian_loss import univariate_gaussian_loss
 # export TF_CPP_MIN_LOG_LEVEL=2
 from topoml_util.slack_send import notify
 
-SCRIPT_VERSION = "0.0.1"
+SCRIPT_VERSION = "0.0.2"
 TIMESTAMP = str(datetime.now()).replace(':', '.')
 SCRIPT_NAME = os.path.basename(__file__)
 DATA_FILE = '../files/geodata_vectorized.npz'
 BATCH_SIZE = 512
 TRAIN_VALIDATE_SPLIT = 0.1
 LATENT_SIZE = 64
-EPOCHS = 50
+EPOCHS = 400
 OPTIMIZER = Adam(lr=0.001)
 
 loaded = np.load(DATA_FILE)

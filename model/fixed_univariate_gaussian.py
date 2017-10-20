@@ -4,13 +4,14 @@ import numpy as np
 from keras import Input
 from keras.callbacks import TensorBoard, EarlyStopping
 from keras.engine import Model
-from keras.layers import LSTM, TimeDistributed, Dense
+from keras.layers import LSTM, Dense
 from keras.optimizers import Adam
 
 from topoml_util.ConsoleLogger import DecypherAll
 from topoml_util.gaussian_loss import univariate_gaussian_loss
 from topoml_util.slack_send import notify
 
+SCRIPT_VERSION = "0.0.1"
 SCRIPT_NAME = os.path.basename(__file__)
 TIMESTAMP = str(datetime.now()).replace(':', '.')
 EPOCHS = 60
@@ -28,7 +29,6 @@ model = Dense(GEO_VECTOR_LEN)(model)
 model = Model(inputs, model)
 model.compile(
     loss=univariate_gaussian_loss,
-    metrics='mse',
     optimizer=Adam(lr=0.01))
 model.summary()
 

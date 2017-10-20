@@ -1,3 +1,5 @@
+VERSION = "0.01"
+
 import os
 from datetime import datetime
 from shapely.geometry import Polygon, Point

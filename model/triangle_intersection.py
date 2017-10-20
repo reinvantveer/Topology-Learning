@@ -17,6 +17,7 @@ from topoml_util.wkt2pyplot import save_plot
 
 SCRIPT_NAME = os.path.basename(__file__)
 TIMESTAMP = str(datetime.now()).replace(':', '.')
+SIGNATURE = SCRIPT_NAME + ' ' + TIMESTAMP
 DATA_FILE = '../files/triangles.npz'
 COMPONENTS = 1
 BATCH_SIZE = 1024
@@ -26,7 +27,7 @@ EPOCHS = 400
 OPTIMIZER = Adam(lr=1e-2)
 
 # Archive the configuration
-copyfile(__file__, 'configs/' + TIMESTAMP + ' ' + SCRIPT_NAME)
+copyfile(__file__, 'configs/' + SIGNATURE)
 
 loaded = np.load(DATA_FILE)
 training_vectors = loaded['point_sequence']
@@ -58,7 +59,7 @@ callbacks = [
         input_func=lambda x: [Polygon(np.reshape(x, (6, 2))[0:3]).wkt, Polygon(np.reshape(x, (6, 2))[3:]).wkt],
         target_func=lambda x: [GeoVectorizer.decypher(x)],
         predict_func=lambda x: [Point(point).wkt for point in GeoVectorizer(gmm_size=COMPONENTS).decypher_gmm_geom(x)],
-        aggregate_func=lambda x: save_plot(x, timestamp=str(datetime.now()).replace(':', '.')),
+        aggregate_func=lambda x: save_plot(x, timestamp=str(datetime.now()).replace(':', '.'), plot_dir='plots/' + SIGNATURE),
         stdout=True),
     EarlyStopping(patience=40, min_delta=1e-3)
 ]

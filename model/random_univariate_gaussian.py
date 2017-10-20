@@ -1,10 +1,12 @@
+VERSION = 0.1
+
 from datetime import datetime
 import numpy as np
 import os
 from keras import Input
 from keras.callbacks import TensorBoard, EarlyStopping
 from keras.engine import Model
-from keras.layers import LSTM, TimeDistributed, Dense
+from keras.layers import LSTM, Dense
 from keras.optimizers import Adam
 from shutil import copyfile
 

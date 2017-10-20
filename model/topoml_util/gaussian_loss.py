@@ -3,7 +3,7 @@ from keras import backend as K
 from keras.backend import epsilon
 from keras.losses import mse, categorical_crossentropy
 
-from GeoVectorizer import GEOM_TYPE_INDEX, RENDER_INDEX
+from .GeoVectorizer import GEOM_TYPE_INDEX, RENDER_INDEX
 
 
 def geom_gaussian_loss(y_true, y_pred):

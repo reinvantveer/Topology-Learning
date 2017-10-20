@@ -16,7 +16,7 @@ from topoml_util.geom_scaler import localized_normal, localized_mean
 # export TF_CPP_MIN_LOG_LEVEL=2
 from topoml_util.slack_send import notify
 
-SCRIPT_VERSION = "0.0.2"
+SCRIPT_VERSION = "0.0.3"
 SCRIPT_NAME = os.path.basename(__file__)
 TIMESTAMP = str(datetime.now()).replace(':', '.')
 DATA_FILE = '../files/geodata_vectorized.npz'
@@ -45,7 +45,6 @@ model = Dense(2)(model)
 model = Model(inputs, model)
 model.compile(
     loss=univariate_gaussian_loss,
-    metrics='mse',
     optimizer=Adam(lr=0.005))
 model.summary()
 

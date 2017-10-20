@@ -72,6 +72,7 @@ def wkt2pyplot(input_wkts, target_wkts=None, prediction_wkts=None,
 
 
 def save_plot(geoms, plot_dir='plots', timestamp=None):
+    os.makedirs(plot_dir, exist_ok=True)
     plt, fig, ax = wkt2pyplot(*geoms)
     plt.savefig(plot_dir + '/plt_' + timestamp + '.png')
     plt.close('all')

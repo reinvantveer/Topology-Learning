@@ -24,7 +24,7 @@ BATCH_SIZE = 1024
 TRAIN_VALIDATE_SPLIT = 0.1
 LATENT_SIZE = 128
 EPOCHS = 400
-OPTIMIZER = Adam(lr=1e-2)
+OPTIMIZER = Adam(lr=1e-3)
 
 # Archive the configuration
 copyfile(__file__, 'configs/' + SIGNATURE)

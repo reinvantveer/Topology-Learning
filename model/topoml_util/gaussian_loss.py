@@ -36,7 +36,7 @@ def bivariate_gaussian(true, pred):
     # analogous to https://github.com/tensorflow/magenta/blob/master/magenta/models/sketch_rnn/model.py#L326
     sigma_x = K.exp(K.abs(pred[..., 2]))
     sigma_y = K.exp(K.abs(pred[..., 3]))
-    rho = K.tanh(pred[..., 4]) * 0.9  # avoid drifting to -1 or 1 to prevent NaN
+    rho = K.tanh(pred[..., 4]) * 0.5  # avoid drifting to -1 or 1 to prevent NaN
     norm1 = K.log(1 + K.abs(x_coord - mu_x))
     norm2 = K.log(1 + K.abs(y_coord - mu_y))
     variance_x = K.softplus(K.square(sigma_x))

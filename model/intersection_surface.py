@@ -18,7 +18,7 @@ from topoml_util.wkt2pyplot import wkt2pyplot
 # To suppress tensorflow info level messages:
 # export TF_CPP_MIN_LOG_LEVEL=2
 
-SCRIPT_VERSION = "0.0.2"
+SCRIPT_VERSION = "0.0.3"
 SCRIPT_NAME = os.path.basename(__file__)
 TIMESTAMP = str(datetime.now()).replace(':', '.')
 DATA_FILE = '../files/geodata_vectorized.npz'

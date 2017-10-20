@@ -8,7 +8,7 @@ from keras.engine import Model
 from keras.layers import LSTM, Dense
 from keras.optimizers import Adam
 
-from topoml_util.geom_scaler import localized_normal
+from topoml_util.geom_scaler import localized_normal, localized_mean
 from topoml_util.ConsoleLogger import DecypherAll
 from topoml_util.gaussian_loss import univariate_gaussian_loss
 
@@ -31,7 +31,8 @@ training_vectors = loaded['input_geoms']
 (data_points, max_points, GEO_VECTOR_LEN) = training_vectors.shape
 
 # Bring coordinates and distance in roughly the same scale
-training_vectors = localized_normal(training_vectors, 1e4)
+means = localized_mean(training_vectors)
+training_vectors = localized_normal(training_vectors, means, 1e4)
 target_vectors = loaded['centroid_distance'][:, 0, :]
 
 inputs = Input(name='Input', shape=(max_points, GEO_VECTOR_LEN))

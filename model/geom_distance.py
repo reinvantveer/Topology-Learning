@@ -8,7 +8,7 @@ from keras.layers import LSTM, Dense
 from keras.optimizers import Adam
 
 from topoml_util.ConsoleLogger import DecypherAll
-from topoml_util.geom_loss import r2_univariate_gaussian_loss
+from topoml_util.gaussian_loss import r2_univariate_gaussian_loss
 from topoml_util.geom_scaler import localized_normal, localized_mean
 
 # To suppress tensorflow info level messages:

@@ -70,4 +70,4 @@ class DecypherAll(Callback):
                                  GeoVectorizer(gmm_size=self.gmm_size).decypher_gmm_geom(prediction_vectors[0], 500)]
 
             geoms = input_polys, target_polys, prediction_points
-            save_plot(self.plot_dir, geoms, timestamp)
+            save_plot(geoms, self.plot_dir, timestamp)

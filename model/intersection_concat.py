@@ -1,24 +1,20 @@
 import os
-import numpy as np
-
 from datetime import datetime
 from shutil import copyfile
+
+import numpy as np
 from keras import Input
 from keras.callbacks import TensorBoard, EarlyStopping
 from keras.engine import Model
 from keras.layers import LSTM, Dense, concatenate, RepeatVector, TimeDistributed
 from keras.optimizers import Adam
-from slackclient import SlackClient
-
 from topoml_util.GaussianMixtureLoss import GaussianMixtureLoss
 from topoml_util.GeoVectorizer import ONE_HOT_LEN
 from topoml_util.PyplotLogger import DecypherAll
 from topoml_util.geom_scaler import localized_normal, localized_mean
-
-# To suppress tensorflow info level messages:
-# export TF_CPP_MIN_LOG_LEVEL=2
 from topoml_util.slack_send import notify
 
+SCRIPT_VERSION = "0.0.1"
 SCRIPT_NAME = os.path.basename(__file__)
 TIMESTAMP = str(datetime.now()).replace(':', '.')
 PLOT_DIR = './plots/' + TIMESTAMP + ' ' + SCRIPT_NAME
@@ -26,11 +22,10 @@ DATA_FILE = '../files/geodata_vectorized.npz'
 BATCH_SIZE = 1024
 GAUSSIAN_MIXTURE_COMPONENTS = 1
 TRAIN_VALIDATE_SPLIT = 0.1
-REPEAT_DEEP_ARCH = 2
-LSTM_SIZE = 150
+LSTM_SIZE = 128
 DENSE_SIZE = 64
 EPOCHS = 400
-OPTIMIZER = Adam(lr=1e-3, clipnorm=1.)
+OPTIMIZER = Adam(lr=1e-3)
 
 # Archive the configuration
 copyfile(__file__, 'configs/' + TIMESTAMP + ' ' + SCRIPT_NAME)
@@ -74,7 +69,6 @@ osm_model = LSTM(osm_max_points * 2, activation='relu')(osm_inputs)
 
 concat = concatenate([brt_model, osm_model])
 model = RepeatVector(target_max_points)(concat)
-model = LSTM(LSTM_SIZE, activation='relu', return_sequences=True)(model)
 model = LSTM(LSTM_SIZE, activation='relu', return_sequences=True)(model)
 model = LSTM(LSTM_SIZE, activation='relu', return_sequences=True)(model)
 model = TimeDistributed(Dense(256, activation='relu'))(model)

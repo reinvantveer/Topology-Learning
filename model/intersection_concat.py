@@ -6,7 +6,7 @@ import numpy as np
 from keras import Input
 from keras.callbacks import TensorBoard, EarlyStopping
 from keras.engine import Model
-from keras.layers import LSTM, Dense, concatenate, RepeatVector, TimeDistributed
+from keras.layers import LSTM, Dense, concatenate, TimeDistributed, Reshape
 from keras.optimizers import Adam
 from topoml_util.GaussianMixtureLoss import GaussianMixtureLoss
 from topoml_util.GeoVectorizer import ONE_HOT_LEN
@@ -14,7 +14,7 @@ from topoml_util.PyplotLogger import DecypherAll
 from topoml_util.geom_scaler import localized_normal, localized_mean
 from topoml_util.slack_send import notify
 
-SCRIPT_VERSION = "0.0.3"
+SCRIPT_VERSION = "0.0.4"
 SCRIPT_NAME = os.path.basename(__file__)
 TIMESTAMP = str(datetime.now()).replace(':', '.')
 PLOT_DIR = './plots/' + TIMESTAMP + ' ' + SCRIPT_NAME
@@ -22,7 +22,7 @@ DATA_FILE = '../files/geodata_vectorized.npz'
 BATCH_SIZE = 1024
 GAUSSIAN_MIXTURE_COMPONENTS = 1
 TRAIN_VALIDATE_SPLIT = 0.1
-LSTM_SIZE = 128
+LSTM_SIZE = 256
 DENSE_SIZE = 64
 EPOCHS = 400
 OPTIMIZER = Adam(lr=1e-3)
@@ -57,19 +57,20 @@ target_vectors = localized_normal(target_vectors, means, 1e4)
 (_, osm_max_points, OSM_INPUT_VECTOR_LEN) = osm_vectors.shape
 target_max_points = target_vectors.shape[1]
 output_seq_length = (GAUSSIAN_MIXTURE_COMPONENTS * 6) + ONE_HOT_LEN
-output_size = target_max_points * output_seq_length
+output_size_2d = target_max_points * output_seq_length
 
 Loss = GaussianMixtureLoss(num_components=GAUSSIAN_MIXTURE_COMPONENTS, num_points=target_max_points)
 
 brt_inputs = Input(shape=(brt_max_points, BRT_INPUT_VECTOR_LEN))
-brt_model = LSTM(brt_max_points * 2, activation='relu')(brt_inputs)
+brt_model = LSTM(brt_max_points * 2, activation='relu', return_sequences=True)(brt_inputs)
 
 osm_inputs = Input(shape=(osm_max_points, OSM_INPUT_VECTOR_LEN))
-osm_model = LSTM(osm_max_points * 2, activation='relu')(osm_inputs)
+osm_model = LSTM(osm_max_points * 2, activation='relu', return_sequences=True)(osm_inputs)
 
 concat = concatenate([brt_model, osm_model])
-model = RepeatVector(target_max_points)(concat)
-model = LSTM(LSTM_SIZE, activation='relu', return_sequences=True)(model)
+model = LSTM(LSTM_SIZE, activation='relu', return_sequences=True)(concat)
+model = LSTM(output_size_2d, activation='relu')(model)
+model = Reshape((target_max_points, output_seq_length))(model)
 model = LSTM(LSTM_SIZE, activation='relu', return_sequences=True)(model)
 model = LSTM(LSTM_SIZE, activation='relu', return_sequences=True)(model)
 model = TimeDistributed(Dense(256, activation='relu'))(model)

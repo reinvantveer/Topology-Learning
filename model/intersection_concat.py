@@ -71,6 +71,7 @@ concat = concatenate([brt_model, osm_model])
 model = RepeatVector(target_max_points)(concat)
 model = LSTM(LSTM_SIZE, activation='relu', return_sequences=True)(model)
 model = LSTM(LSTM_SIZE, activation='relu', return_sequences=True)(model)
+model = LSTM(LSTM_SIZE, activation='relu', return_sequences=True)(model)
 model = TimeDistributed(Dense(256, activation='relu'))(model)
 model = Dense(output_seq_length)(model)
 

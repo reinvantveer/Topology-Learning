@@ -6,7 +6,7 @@ import numpy as np
 from keras import Input
 from keras.callbacks import TensorBoard, EarlyStopping
 from keras.engine import Model
-from keras.layers import LSTM, Dense, concatenate, TimeDistributed, Reshape
+from keras.layers import LSTM, Dense, concatenate, TimeDistributed, RepeatVector
 from keras.optimizers import Adam
 from topoml_util.GaussianMixtureLoss import GaussianMixtureLoss
 from topoml_util.GeoVectorizer import ONE_HOT_LEN
@@ -62,15 +62,15 @@ output_size_2d = target_max_points * output_seq_length
 Loss = GaussianMixtureLoss(num_components=GAUSSIAN_MIXTURE_COMPONENTS, num_points=target_max_points)
 
 brt_inputs = Input(shape=(brt_max_points, BRT_INPUT_VECTOR_LEN))
-brt_model = LSTM(brt_max_points * 2, activation='relu', return_sequences=True)(brt_inputs)
+brt_model = LSTM(brt_max_points * 2, activation='relu')(brt_inputs)
 
 osm_inputs = Input(shape=(osm_max_points, OSM_INPUT_VECTOR_LEN))
-osm_model = LSTM(osm_max_points * 2, activation='relu', return_sequences=True)(osm_inputs)
+osm_model = LSTM(osm_max_points * 2, activation='relu')(osm_inputs)
 
 concat = concatenate([brt_model, osm_model])
-model = LSTM(LSTM_SIZE, activation='relu', return_sequences=True)(concat)
-model = LSTM(output_size_2d, activation='relu')(model)
-model = Reshape((target_max_points, output_seq_length))(model)
+model = RepeatVector(target_max_points)(concat)
+model = LSTM(LSTM_SIZE, activation='relu', return_sequences=True)(model)
+model = LSTM(LSTM_SIZE, activation='relu', return_sequences=True)(model)
 model = LSTM(LSTM_SIZE, activation='relu', return_sequences=True)(model)
 model = LSTM(LSTM_SIZE, activation='relu', return_sequences=True)(model)
 model = TimeDistributed(Dense(256, activation='relu'))(model)

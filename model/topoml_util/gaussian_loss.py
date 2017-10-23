@@ -34,21 +34,21 @@ def bivariate_gaussian(true, pred):
     # exponentiate the sigmas and also make correlative rho between -1 and 1.
     # eq. # 21 and 22 of http://arxiv.org/abs/1308.0850
     # analogous to https://github.com/tensorflow/magenta/blob/master/magenta/models/sketch_rnn/model.py#L326
-    sigma_x = K.exp(K.abs(pred[..., 2]))
-    sigma_y = K.exp(K.abs(pred[..., 3]))
-    rho = K.tanh(pred[..., 4]) * 0.9  # avoid drifting to -1 or 1 to prevent NaN
+    sigma_x = K.exp(K.abs(pred[..., 2])) + epsilon()
+    sigma_y = K.exp(K.abs(pred[..., 3])) + epsilon()
+    rho = K.tanh(pred[..., 4]) * 0.99  # avoid drifting to -1 or 1 to prevent NaN
     norm1 = K.log(1 + K.abs(x_coord - mu_x))
     norm2 = K.log(1 + K.abs(y_coord - mu_y))
-    variance_x = K.softplus(K.square(sigma_x))
-    variance_y = K.softplus(K.square(sigma_y))
-    s1s2 = K.softplus(sigma_x * sigma_y)  # very large if sigma_x and/or sigma_y are very large
+    variance_x = K.square(sigma_x)
+    variance_y = K.square(sigma_y)
+    s1s2 = sigma_x * sigma_y  # very large if sigma_x and/or sigma_y are very large
     # eq 25 of http://arxiv.org/abs/1308.0850
     z = ((K.square(norm1) / variance_x) +
          (K.square(norm2) / variance_y) -
          (2 * rho * norm1 * norm2 / s1s2))  # z → -∞ if rho * norm1 * norm2 → ∞ and/or s1s2 → 0
     neg_rho = 1 - K.square(rho)  # → 0 if rho → {1, -1}
     numerator = K.exp(-z / (2 * neg_rho))  # → ∞ if z → -∞ and/or neg_rho → 0
-    denominator = (2 * np.pi * s1s2 * K.sqrt(neg_rho)) + epsilon()  # → 0 if s1s2 → 0 and/or neg_rho → 0
+    denominator = (2 * np.pi * s1s2 * K.sqrt(neg_rho))  # → 0 if s1s2 → 0 and/or neg_rho → 0
     pdf = numerator / denominator  # → ∞ if denominator → 0 and/or if numerator → ∞
     return pdf
 
@@ -65,8 +65,8 @@ def bivariate_gaussian_loss(true, pred):
     :param pred: values predicted with at least [mu1, mu2, sigma1, sigma2, rho]
     :return: the log of the summed max likelihood
     """
-    pdf = bivariate_gaussian(pred, true)
-    return K.log(K.sum(-K.log(pdf + epsilon())))  # → -∞ if pdf → ∞
+    pdf = bivariate_gaussian(true, pred)
+    return K.sum(-K.log(pdf + epsilon()))  # → -∞ if pdf → ∞
 
 
 def univariate_gaussian(true, pred):
@@ -77,10 +77,6 @@ def univariate_gaussian(true, pred):
     :param pred: values predicted with at least [mu, sigma]
     :return: probability density function
     """
-    if not len(true.shape) == len(pred.shape):
-        print(
-            'Warning: dimensionality of truth (', len(true.shape), ') and prediction tensors (', len(pred.shape), ')do '
-            'not have the same shape. The outcome of the gaussian function may be unpredictable.')
     x = true[..., 0]
     mu = pred[..., 0]
     sigma = pred[..., 1]

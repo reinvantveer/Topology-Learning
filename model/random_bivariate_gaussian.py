@@ -22,12 +22,11 @@ TRAIN_VALIDATE_SPLIT = 0.2
 # Archive the configuration
 copyfile(__file__, 'configs/' + TIMESTAMP + ' ' + SCRIPT_NAME)
 
-bivariate = np.random.randint(low=1, high=20, size=(TRAINING_SIZE, 1, 5))
-(_, max_points, SEQ_LEN) = bivariate.shape
+bivariate = np.random.randint(low=1, high=20, size=(TRAINING_SIZE, 2))
+_, max_points = bivariate.shape
 
-inputs = Input(name='Input', shape=(max_points, SEQ_LEN))
-model = LSTM(SEQ_LEN, return_sequences=True)(inputs)
-model = TimeDistributed(Dense(5))(model)
+inputs = Input(name='Input', shape=(max_points,))
+model = Dense(5)(inputs)
 model = Model(inputs, model)
 model.compile(loss=bivariate_gaussian_loss, optimizer=Adam(lr=0.001))
 model.summary()

@@ -35,17 +35,17 @@ class EpochLogger(Callback):
 
         print('\nLogging output for %i inputs, targets and predictions...' % len(predictions))
 
-        for (input, target, prediction) in zip(input_samples, target_samples, predictions):
+        for (inputs, targets, predictions) in zip(input_samples, target_samples, predictions):
 
             if self.log_to_stdout:
                 print('Input:')
-                pp.pprint(input)
+                pp.pprint(inputs)
                 print('Target:')
-                pp.pprint(target)
+                pp.pprint(targets)
                 print('Prediction:')
-                pp.pprint(prediction)
+                pp.pprint(predictions)
                 print('')
 
             if self.aggregate_func:
                 self.aggregate_func(
-                    (self.input_func(input), self.target_func(target), self.predict_func(prediction)))
+                    (self.input_func(inputs), self.target_func(targets), self.predict_func(predictions)))

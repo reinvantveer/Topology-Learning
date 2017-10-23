@@ -92,7 +92,7 @@ callbacks = [
                 input_slice=lambda x: x[:2],
                 target_slice=lambda x: x[2:3],
                 stdout=True),
-    EarlyStopping(patience=40, min_delta=0.001)
+    EarlyStopping(patience=40, min_delta=1)
 ]
 
 history = model.fit(

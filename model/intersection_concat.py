@@ -17,19 +17,20 @@ from topoml_util.slack_send import notify
 SCRIPT_VERSION = "0.0.6"
 SCRIPT_NAME = os.path.basename(__file__)
 TIMESTAMP = str(datetime.now()).replace(':', '.')
+SIGNATURE = SCRIPT_NAME + ' ' + TIMESTAMP
 PLOT_DIR = './plots/' + TIMESTAMP + ' ' + SCRIPT_NAME
 DATA_FILE = '../files/geodata_vectorized.npz'
 BATCH_SIZE = 1024
 GAUSSIAN_MIXTURE_COMPONENTS = 1
 TRAIN_VALIDATE_SPLIT = 0.1
-LSTM_SIZE = 256
-DENSE_SIZE = 64
-REPEAT_HIDDEN = 2
+LSTM_SIZE = 128
+DENSE_SIZE = 32
+REPEAT_HIDDEN = 1
 EPOCHS = 400
-OPTIMIZER = Adam(lr=1e-3, clipnorm=1.)
+OPTIMIZER = Adam(lr=1e-3)
 
 # Archive the configuration
-copyfile(__file__, 'configs/' + TIMESTAMP + ' ' + SCRIPT_NAME)
+copyfile(__file__, 'configs/' + SIGNATURE)
 
 loaded = np.load(DATA_FILE)
 raw_brt_vectors = loaded['brt_vectors']
@@ -74,7 +75,7 @@ model = RepeatVector(target_max_points)(concat)
 for layer in range(REPEAT_HIDDEN):
     model = LSTM(LSTM_SIZE, activation='relu', return_sequences=True)(model)
 
-model = TimeDistributed(Dense(256, activation='relu'))(model)
+model = TimeDistributed(Dense(DENSE_SIZE, activation='relu'))(model)
 model = Dense(output_seq_length)(model)
 
 model = Model(inputs=[brt_inputs, osm_inputs], outputs=model)
@@ -89,7 +90,8 @@ callbacks = [
     DecypherAll(gmm_size=GAUSSIAN_MIXTURE_COMPONENTS,
                 plot_dir=PLOT_DIR,
                 input_slice=lambda x: x[:2],
-                target_slice=lambda x: x[2:3]),
+                target_slice=lambda x: x[2:3],
+                stdout=True),
     EarlyStopping(patience=40, min_delta=0.001)
 ]
 

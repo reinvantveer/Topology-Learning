@@ -34,7 +34,7 @@ class GaussianMixtureLoss:
         pi_index = 5  # mixture component weight
         pi_weights = K.softmax(predicted_components[..., pi_index])
         gmm = bivariate_gaussian(true_coordinates, predicted_components) * pi_weights
-        gmm_loss = K.log(K.sum(-K.log(gmm + K.epsilon())))
+        gmm_loss = K.sum(-K.log(gmm + K.epsilon()))
 
         render_action = K.softmax(y_true[..., -RENDER_LEN:])
         neg_full_stop_chance = 1 - render_action[..., 2]  # 1 minus the chance of full stop

@@ -24,9 +24,9 @@ GAUSSIAN_MIXTURE_COMPONENTS = 1
 TRAIN_VALIDATE_SPLIT = 0.1
 LSTM_SIZE = 256
 DENSE_SIZE = 64
-REPEAT_HIDDEN = 3
+REPEAT_HIDDEN = 2
 EPOCHS = 400
-OPTIMIZER = Adam(lr=1e-3)
+OPTIMIZER = Adam(lr=1e-3, clipnorm=1.)
 
 # Archive the configuration
 copyfile(__file__, 'configs/' + TIMESTAMP + ' ' + SCRIPT_NAME)

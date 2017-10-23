@@ -14,7 +14,7 @@ from topoml_util.PyplotLogger import DecypherAll
 from topoml_util.geom_scaler import localized_normal, localized_mean
 from topoml_util.slack_send import notify
 
-SCRIPT_VERSION = "0.0.7"
+SCRIPT_VERSION = "0.0.8"
 SCRIPT_NAME = os.path.basename(__file__)
 TIMESTAMP = str(datetime.now()).replace(':', '.')
 SIGNATURE = SCRIPT_NAME + ' ' + TIMESTAMP
@@ -91,7 +91,7 @@ callbacks = [
                 plot_dir=PLOT_DIR,
                 input_slice=lambda x: x[:2],
                 target_slice=lambda x: x[2:3],
-                stdout=True),
+                stdout=False),
     EarlyStopping(patience=40, min_delta=1)
 ]
 

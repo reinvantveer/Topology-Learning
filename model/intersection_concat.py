@@ -14,7 +14,7 @@ from topoml_util.PyplotLogger import DecypherAll
 from topoml_util.geom_scaler import localized_normal, localized_mean
 from topoml_util.slack_send import notify
 
-SCRIPT_VERSION = "0.0.6"
+SCRIPT_VERSION = "0.0.7"
 SCRIPT_NAME = os.path.basename(__file__)
 TIMESTAMP = str(datetime.now()).replace(':', '.')
 SIGNATURE = SCRIPT_NAME + ' ' + TIMESTAMP
@@ -25,7 +25,7 @@ GAUSSIAN_MIXTURE_COMPONENTS = 1
 TRAIN_VALIDATE_SPLIT = 0.1
 LSTM_SIZE = 128
 DENSE_SIZE = 32
-REPEAT_HIDDEN = 1
+REPEAT_HIDDEN = 2
 EPOCHS = 400
 OPTIMIZER = Adam(lr=1e-3)
 

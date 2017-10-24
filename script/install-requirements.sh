@@ -27,9 +27,12 @@ sudo apt-get install -y x2goserver x2goserver-xsession
 wget https://download.jetbrains.com/python/pycharm-community-2017.2.3.tar.gz
 tar xvzf pycharm-community-2017.2.3.tar.gz
 
+# time zone and numlock config
+sudo timedatectl set-timezone Europe/Amsterdam
 sudo apt-get install numlockx
 sudo sed -i 's|^exit 0.*$|# Numlock enable\n[ -x /usr/bin/numlockx ] \&\& numlockx on\n\nexit 0|' /etc/rc.local
 echo "/usr/bin/numlockx on" | sudo tee -a /etc/X11/xinit/xinitrc
+echo "JAVA_HOME=\"/usr/lib/jvm/java-8-openjdk-amd64\"" | sudo tee -a /etc/environment
 sudo reboot
 
 # Install Jenkins

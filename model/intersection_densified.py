@@ -1,42 +1,54 @@
 import os
 from datetime import datetime
-from shutil import copyfile
 
 import numpy as np
+from geom_scaler import localized_mean, localized_normal
 from keras import Input
 from keras.callbacks import TensorBoard, EarlyStopping
 from keras.engine import Model
 from keras.layers import LSTM, Dense, Reshape
 from keras.optimizers import Adam
-
 from topoml_util.GaussianMixtureLoss import GaussianMixtureLoss
-from topoml_util.GeoVectorizer import GEOM_TYPE_LEN, RENDER_LEN
+from topoml_util.GeoVectorizer import GEOM_TYPE_LEN, RENDER_LEN, GeoVectorizer
 from topoml_util.PyplotLogger import DecypherAll
-
-# To suppress tensorflow info level messages:
-# export TF_CPP_MIN_LOG_LEVEL=2
 from topoml_util.slack_send import notify
 
+SCRIPT_VERSION = "0.0.1"
 SCRIPT_NAME = os.path.basename(__file__)
 TIMESTAMP = str(datetime.now()).replace(':', '.')
 PLOT_DIR = './plots/' + TIMESTAMP + ' ' + SCRIPT_NAME
-DATA_FILE = '../files/densified_vectorized.npz'
+DATA_FILE = '../files/geodata_vectorized.npz'
 BATCH_SIZE = 1024
 GAUSSIAN_MIXTURE_COMPONENTS = 1
-DENSIFIED = 100
+DENSIFIED = 20
 TRAIN_VALIDATE_SPLIT = 0.1
 REPEAT_DEEP_ARCH = 2
 LSTM_SIZE = 128
 DENSE_SIZE = 64
 EPOCHS = 400
-OPTIMIZER = Adam(lr=1e-6, clipnorm=1.)
+OPTIMIZER = Adam(lr=1e-3, clipnorm=1.)
 
-# Archive the configuration
-copyfile(__file__, 'configs/' + TIMESTAMP + ' ' + SCRIPT_NAME)
+TARGET_FILE = '../files/densified_vectorized.npz'
 
 loaded = np.load(DATA_FILE)
-input_vectors = loaded['input_geoms']
-target_vectors = loaded['intersection']
+raw_training_vectors = loaded['input_geoms']
+raw_target_vectors = loaded['intersection']
+
+input_vectors = []
+target_vectors = []
+
+# skip non-intersecting geometries
+for train, target in zip(raw_training_vectors, raw_target_vectors):
+    if not target[0, 0] == 0:  # a zero coordinate designates an empty geometry
+        input_vectors.append(train)
+        target_vectors.append(target)
+
+print('Preprocessing vectors...')
+means = localized_mean(input_vectors)
+input_vectors = localized_normal(input_vectors, means, 1e4)
+input_vectors = np.array([GeoVectorizer.interpolate(vector, DENSIFIED) for vector in input_vectors])
+target_vectors = localized_normal(target_vectors, means, 1e4)
+target_vectors = np.array([GeoVectorizer.interpolate(vector, 50) for vector in target_vectors])
 
 (data_points, max_input_points, INPUT_VECTOR_LEN) = input_vectors.shape
 (_, max_target_points, _) = target_vectors.shape

@@ -4,7 +4,7 @@ set -ex
 # CHANGED_MODEL_FILES=`git diff --stat --name-only $GIT_PREVIOUS_COMMIT $GIT_COMMIT | grep model | grep -v topoml_util`
 
 # TeamCity style
-CHANGED_MODEL_FILES=`cat $1 | cut -d \: -f 1`
+CHANGED_MODEL_FILES="$(cat $1 | cut -d \: -f 1)"
 
 echo ${CHANGED_MODEL_FILES}
 

@@ -6,7 +6,7 @@ set -ex
 # TeamCity style
 CHANGED_MODEL_FILES="$(cat $1 | cut -d \: -f 1)"
 
-echo ${CHANGED_MODEL_FILES}
+echo $CHANGED_MODEL_FILES
 
 cd model
 for FILE in ${CHANGED_MODEL_FILES}

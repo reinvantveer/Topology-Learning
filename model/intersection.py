@@ -8,6 +8,7 @@ from keras.callbacks import TensorBoard
 from keras.engine import Model
 from keras.layers import LSTM, Dense
 from keras.optimizers import Adam
+from slack_send import notify
 from slackclient import SlackClient
 
 from topoml_util.GaussianMixtureLoss import GaussianMixtureLoss
@@ -18,6 +19,7 @@ from topoml_util.geom_scaler import localized_normal, localized_mean
 # To suppress tensorflow info level messages:
 # export TF_CPP_MIN_LOG_LEVEL=2
 
+SCRIPT_VERSION = "0.0.1"
 SCRIPT_NAME = os.path.basename(__file__)
 TIMESTAMP = str(datetime.now()).replace(':', '.')
 PLOT_DIR = './plots/' + TIMESTAMP + ' ' + SCRIPT_NAME
@@ -81,24 +83,13 @@ model.summary()
 tb_callback = TensorBoard(log_dir='./tensorboard_log/' + TIMESTAMP + ' ' + SCRIPT_NAME, write_graph=False)
 decypher = DecypherAll(gmm_size=GAUSSIAN_MIXTURE_COMPONENTS, plot_dir=PLOT_DIR)
 
-model.fit(
+history = model.fit(
     x=training_vectors,
     y=target_vectors,
     epochs=EPOCHS,
     batch_size=BATCH_SIZE,
     validation_split=TRAIN_VALIDATE_SPLIT,
-    callbacks=[decypher, tb_callback])
+    callbacks=[decypher, tb_callback]).history
 
-slack_token = os.environ.get("SLACK_API_TOKEN")
-
-if slack_token:
-    sc = SlackClient(slack_token)
-    sc.api_call(
-      "chat.postMessage",
-      channel="#machinelearning",
-      text="Session " + TIMESTAMP + ' ' + SCRIPT_NAME + " completed successfully")
-else:
-    print('No slack notification: no slack API token environment variable "SLACK_API_TOKEN" set.')
-
-print('Done!')
-
+notify(TIMESTAMP, SCRIPT_NAME, 'validation loss of ' + str(history['val_loss'][-1]))
+print(SCRIPT_NAME, 'finished successfully')

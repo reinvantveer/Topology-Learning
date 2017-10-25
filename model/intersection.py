@@ -8,18 +8,16 @@ from keras.callbacks import TensorBoard
 from keras.engine import Model
 from keras.layers import LSTM, Dense
 from keras.optimizers import Adam
-from slack_send import notify
-from slackclient import SlackClient
-
+from topoml_util.slack_send import notify
 from topoml_util.GaussianMixtureLoss import GaussianMixtureLoss
-from topoml_util.GeoVectorizer import GEOM_TYPE_LEN, RENDER_LEN, ONE_HOT_LEN
+from topoml_util.GeoVectorizer import ONE_HOT_LEN
 from topoml_util.PyplotLogger import DecypherAll
 from topoml_util.geom_scaler import localized_normal, localized_mean
 
 # To suppress tensorflow info level messages:
 # export TF_CPP_MIN_LOG_LEVEL=2
 
-SCRIPT_VERSION = "0.0.1"
+SCRIPT_VERSION = "0.0.2"
 SCRIPT_NAME = os.path.basename(__file__)
 TIMESTAMP = str(datetime.now()).replace(':', '.')
 PLOT_DIR = './plots/' + TIMESTAMP + ' ' + SCRIPT_NAME

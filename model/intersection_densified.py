@@ -2,18 +2,18 @@ import os
 from datetime import datetime
 
 import numpy as np
-from geom_scaler import localized_mean, localized_normal
 from keras import Input
 from keras.callbacks import TensorBoard, EarlyStopping
 from keras.engine import Model
 from keras.layers import LSTM, Dense, Reshape
 from keras.optimizers import Adam
+from topoml_util.geom_scaler import localized_mean, localized_normal
 from topoml_util.GaussianMixtureLoss import GaussianMixtureLoss
 from topoml_util.GeoVectorizer import GEOM_TYPE_LEN, RENDER_LEN, GeoVectorizer
 from topoml_util.PyplotLogger import DecypherAll
 from topoml_util.slack_send import notify
 
-SCRIPT_VERSION = "0.0.1"
+SCRIPT_VERSION = "0.0.2"
 SCRIPT_NAME = os.path.basename(__file__)
 TIMESTAMP = str(datetime.now()).replace(':', '.')
 PLOT_DIR = './plots/' + TIMESTAMP + ' ' + SCRIPT_NAME

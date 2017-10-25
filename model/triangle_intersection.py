@@ -17,6 +17,7 @@ from topoml_util.GaussianMixtureLoss import GaussianMixtureLoss
 from topoml_util.slack_send import notify
 from topoml_util.wkt2pyplot import save_plot
 
+SCRIPT_VERSION = "0.0.1"
 SCRIPT_NAME = os.path.basename(__file__)
 TIMESTAMP = str(datetime.now()).replace(':', '.')
 SIGNATURE = SCRIPT_NAME + ' ' + TIMESTAMP

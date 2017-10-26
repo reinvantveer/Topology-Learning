@@ -11,7 +11,7 @@ services:
       - "8111:8111"
 
   teamcity_agent:
-    image: jetbrains/teamcity-agent
+    build: ./teamcity_agent
     restart: unless-stopped
     volumes:
       - ./teamcity_agent:/data/teamcity_agent/conf

@@ -8,8 +8,8 @@ pp = pprint.PrettyPrinter()
 
 
 class EpochLogger(Callback):
-    def __init__(self, input_func, target_func, predict_func, aggregate_func, sample_size=3, stdout=False,
-                 input_slice=lambda x: x[0:1], target_slice=lambda x: x[1:2]):
+    def __init__(self, input_func=None, target_func=None, predict_func=None, aggregate_func=None, sample_size=3,
+                 stdout=False, input_slice=lambda x: x[0:1], target_slice=lambda x: x[1:2]):
         super().__init__()
         self.input_func = input_func
         self.target_func = target_func

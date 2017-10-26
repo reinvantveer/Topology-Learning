@@ -58,7 +58,7 @@ osm_inputs = Input(shape=(osm_max_points, osm_seq_len))
 osm_model = LSTM(osm_max_points * 2, activation='relu')(osm_inputs)
 
 concat = concatenate([brt_model, osm_model])
-model = Reshape((1, brt_seq_len + osm_seq_len))(concat)
+model = Reshape((1, (brt_seq_len + osm_seq_len) * 2))(concat)
 
 for layer in range(REPEAT_HIDDEN):
     model = LSTM(HIDDEN_SIZE, activation='relu', return_sequences=True)(model)

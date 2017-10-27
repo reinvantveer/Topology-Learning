@@ -27,28 +27,31 @@ OPTIMIZER = Adam(lr=1e-3)
 loaded = np.load(DATA_FILE)
 raw_brt_vectors = loaded['brt_vectors']
 raw_osm_vectors = loaded['osm_vectors']
-raw_intersection_vectors = loaded['intersection']
+raw_surface_area_vectors = loaded['intersection_surface'][:, 0, :]
+raw_combined_geom_vectors = loaded['input_geoms']
 
 brt_vectors = []
 osm_vectors = []
-intersection_vectors = []
+surface_area_vectors = []
+combined_geom_vectors = []
 
 # skip non-intersecting geometries
-for brt, osm, target in zip(raw_brt_vectors, raw_osm_vectors, raw_intersection_vectors):
-    if not target[0, 0] == 0:  # a zero coordinate designates an empty geometry
+for brt, osm, target, combined in zip(raw_brt_vectors, raw_osm_vectors, raw_surface_area_vectors, raw_combined_geom_vectors):
+    if not target[0] == 0:  # a zero coordinate designates an empty geometry
         brt_vectors.append(brt)
         osm_vectors.append(osm)
-        intersection_vectors.append(target)
+        surface_area_vectors.append(target)
+        combined_geom_vectors.append(combined)
 
 # data whitening
-means = localized_mean(intersection_vectors)
+means = localized_mean(combined_geom_vectors)
 brt_vectors = localized_normal(brt_vectors, means, 1e4)
 osm_vectors = localized_normal(osm_vectors, means, 1e4)
-intersection_vectors = localized_normal(intersection_vectors, means, 1e4)
+surface_area_vectors = np.array(surface_area_vectors)
 
 # shape determination
-(data_points, brt_max_points, brt_seq_len) = brt_vectors.shape
-(_, osm_max_points, osm_seq_len) = osm_vectors.shape
+data_points, brt_max_points, brt_seq_len = brt_vectors.shape
+_, osm_max_points, osm_seq_len = osm_vectors.shape
 
 
 brt_inputs = Input(shape=(brt_max_points, brt_seq_len))
@@ -58,7 +61,7 @@ osm_inputs = Input(shape=(osm_max_points, osm_seq_len))
 osm_model = LSTM(osm_max_points * 2, activation='relu')(osm_inputs)
 
 concat = concatenate([brt_model, osm_model])
-model = Reshape((1, (brt_seq_len + osm_seq_len) * 2))(concat)
+model = Reshape((1, concat.shape[-1].value))(concat)
 
 for layer in range(REPEAT_HIDDEN):
     model = LSTM(HIDDEN_SIZE, activation='relu', return_sequences=True)(model)
@@ -72,13 +75,13 @@ model.summary()
 
 callbacks = [
     TensorBoard(log_dir='./tensorboard_log/' + SIGNATURE, write_graph=False),
-    EpochLogger(),
+    EpochLogger(input_slice=lambda x: x[0:2], stdout=True),
     EarlyStopping(patience=40, min_delta=0.001)
 ]
 
 history = model.fit(
     x=[brt_vectors, osm_vectors],
-    y=intersection_vectors,
+    y=surface_area_vectors,
     epochs=EPOCHS,
     batch_size=BATCH_SIZE,
     validation_split=TRAIN_VALIDATE_SPLIT,

@@ -12,17 +12,17 @@ from topoml_util.gaussian_loss import univariate_gaussian_loss
 from topoml_util.geom_scaler import localized_normal, localized_mean
 from topoml_util.slack_send import notify
 
-SCRIPT_VERSION = "0.0.7"
+SCRIPT_VERSION = "0.0.8"
 SCRIPT_NAME = os.path.basename(__file__)
 TIMESTAMP = str(datetime.now()).replace(':', '.')
 SIGNATURE = SCRIPT_NAME + ' ' + TIMESTAMP
 DATA_FILE = '../files/geodata_vectorized.npz'
 BATCH_SIZE = 1024
 TRAIN_VALIDATE_SPLIT = 0.1
-HIDDEN_SIZE = 128
-REPEAT_HIDDEN = 3
-EPOCHS = 400
-OPTIMIZER = Adam(lr=1e-3)
+HIDDEN_SIZE = 256
+REPEAT_HIDDEN = 2
+EPOCHS = 800
+OPTIMIZER = Adam(lr=5e-3)
 
 loaded = np.load(DATA_FILE)
 raw_brt_vectors = loaded['brt_vectors']

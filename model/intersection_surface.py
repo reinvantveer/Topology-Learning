@@ -5,7 +5,7 @@ import numpy as np
 from keras import Input
 from keras.callbacks import TensorBoard, EarlyStopping
 from keras.engine import Model
-from keras.layers import LSTM, Dense, concatenate, Reshape
+from keras.layers import LSTM, Dense, concatenate, Reshape, LeakyReLU
 from keras.optimizers import Adam
 from topoml_util.LoggerCallback import EpochLogger
 from topoml_util.gaussian_loss import univariate_gaussian_loss
@@ -65,7 +65,8 @@ concat = concatenate([brt_model, osm_model])
 model = Reshape((1, concat.shape[-1].value))(concat)
 
 for layer in range(REPEAT_HIDDEN):
-    model = LSTM(LSTM_UNITS, activation='relu', return_sequences=True)(model)
+    model = LSTM(LSTM_UNITS, return_sequences=True)(model)
+    model = LeakyReLU()(model)
     model = Dense(DENSE_UNITS, activation='relu')(model)
 
 model = LSTM(LSTM_UNITS, activation='relu')(model)  # Flatten

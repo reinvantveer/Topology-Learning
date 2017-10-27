@@ -19,7 +19,8 @@ SIGNATURE = SCRIPT_NAME + ' ' + TIMESTAMP
 DATA_FILE = '../files/geodata_vectorized.npz'
 BATCH_SIZE = 1024
 TRAIN_VALIDATE_SPLIT = 0.1
-HIDDEN_SIZE = 256
+LSTM_UNITS = 256
+DENSE_UNITS = 64
 REPEAT_HIDDEN = 4
 EPOCHS = 800
 OPTIMIZER = Adam(lr=1e-3)
@@ -64,10 +65,10 @@ concat = concatenate([brt_model, osm_model])
 model = Reshape((1, concat.shape[-1].value))(concat)
 
 for layer in range(REPEAT_HIDDEN):
-    model = LSTM(HIDDEN_SIZE, activation='relu', return_sequences=True)(model)
-    model = Dense(32, activation='relu')(model)
+    model = LSTM(LSTM_UNITS, activation='relu', return_sequences=True)(model)
+    model = Dense(DENSE_UNITS, activation='relu')(model)
 
-model = LSTM(HIDDEN_SIZE, activation='relu')(model)  # Flatten
+model = LSTM(LSTM_UNITS, activation='relu')(model)  # Flatten
 model = Dense(2)(model)
 model = Model(inputs=[brt_inputs, osm_inputs], outputs=model)
 model.compile(loss=univariate_gaussian_loss, optimizer=OPTIMIZER)

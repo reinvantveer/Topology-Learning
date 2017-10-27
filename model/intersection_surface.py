@@ -75,7 +75,7 @@ model.summary()
 
 callbacks = [
     TensorBoard(log_dir='./tensorboard_log/' + SIGNATURE, write_graph=False),
-    EpochLogger(input_slice=lambda x: x[0:2], stdout=True),
+    EpochLogger(input_slice=lambda x: x[0:2], target_slice=lambda x: x[2:3], stdout=True),
     EarlyStopping(patience=40, min_delta=0.001)
 ]
 

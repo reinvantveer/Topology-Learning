@@ -1,51 +1,46 @@
-from datetime import datetime
 import os
+from datetime import datetime
+
 import numpy as np
 from keras import Input
 from keras.callbacks import TensorBoard, EarlyStopping
 from keras.engine import Model
-from keras.layers import LSTM, Dense
+from keras.layers import LSTM, Dense, TimeDistributed
 from keras.optimizers import Adam
-from shutil import copyfile
-
 from topoml_util.ConsoleLogger import DecypherAll
 from topoml_util.gaussian_loss import univariate_gaussian_loss
 from topoml_util.geom_scaler import localized_normal, localized_mean
-
-# To suppress tensorflow info level messages:
-# export TF_CPP_MIN_LOG_LEVEL=2
 from topoml_util.slack_send import notify
 
-SCRIPT_VERSION = "0.0.3"
+SCRIPT_VERSION = "0.0.4"
 SCRIPT_NAME = os.path.basename(__file__)
 TIMESTAMP = str(datetime.now()).replace(':', '.')
+SIGNATURE = SCRIPT_NAME + ' ' + TIMESTAMP
 DATA_FILE = '../files/geodata_vectorized.npz'
 BATCH_SIZE = 512
 TRAIN_VALIDATE_SPLIT = 0.1
-LATENT_SIZE = 64
+LATENT_SIZE = 128
 EPOCHS = 50
-OPTIMIZER = 'adam'
-
-# Archive the configuration
-copyfile(__file__, 'configs/' + TIMESTAMP + ' ' + SCRIPT_NAME)
+OPTIMIZER = Adam(lr=0.005)
 
 loaded = np.load(DATA_FILE)
 training_vectors = loaded['input_geoms']
 
 # Bring coordinates and distance in the same scale
 means = localized_mean(training_vectors)
-training_vectors = localized_normal(training_vectors, means)
+training_vectors = localized_normal(training_vectors, means, 1e4)
 
 (data_points, max_points, GEO_VECTOR_LEN) = training_vectors.shape
 target_vectors = loaded['geom_distance'][:, 0, :]
 
 inputs = Input(name='Input', shape=(max_points, GEO_VECTOR_LEN))
 model = LSTM(LATENT_SIZE, activation='relu')(inputs)
+model = TimeDistributed(Dense(32))(model)
 model = Dense(2)(model)
 model = Model(inputs, model)
 model.compile(
     loss=univariate_gaussian_loss,
-    optimizer=Adam(lr=0.005))
+    optimizer=OPTIMIZER)
 model.summary()
 
 callbacks = [

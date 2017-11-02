@@ -3,6 +3,7 @@ import pprint
 import random
 import numpy as np
 from shapely.geometry import Point
+from wkt2pyplot import save_plot
 from keras.callbacks import Callback
 from datetime import datetime
 

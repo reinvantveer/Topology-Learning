@@ -1,6 +1,6 @@
 import os
 from datetime import datetime
-
+import os
 import numpy as np
 from keras import Input
 from keras.callbacks import TensorBoard, EarlyStopping
@@ -24,6 +24,9 @@ TRAIN_VALIDATE_SPLIT = 0.1
 LATENT_SIZE = 128
 EPOCHS = 400
 OPTIMIZER = Adam(lr=1e-3)
+
+# Archive the configuration
+copyfile(__file__, 'configs/' + TIMESTAMP + ' ' + SCRIPT_NAME)
 
 loaded = np.load(DATA_FILE)
 training_vectors = loaded['input_geoms']

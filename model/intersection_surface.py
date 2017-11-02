@@ -2,8 +2,6 @@ import os
 from datetime import datetime
 
 import numpy as np
-import os
-
 from keras import Input
 from keras.callbacks import TensorBoard, EarlyStopping
 from keras.engine import Model
@@ -39,7 +37,8 @@ surface_area_vectors = []
 combined_geom_vectors = []
 
 # skip non-intersecting geometries
-for brt, osm, target, combined in zip(raw_brt_vectors, raw_osm_vectors, raw_surface_area_vectors, raw_combined_geom_vectors):
+for brt, osm, target, combined in zip(raw_brt_vectors, raw_osm_vectors, raw_surface_area_vectors,
+                                      raw_combined_geom_vectors):
     if not target[0] == 0:  # a zero coordinate designates an empty geometry
         brt_vectors.append(brt)
         osm_vectors.append(osm)

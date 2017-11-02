@@ -1,8 +1,7 @@
 import os
-import numpy as np
-
 from datetime import datetime
-from shutil import copyfile
+
+import numpy as np
 from keras import Input
 from keras.callbacks import TensorBoard, EarlyStopping
 from keras.engine import Model
@@ -28,9 +27,6 @@ DENSE_SIZE = 64
 REPEAT_HIDDEN = 2
 EPOCHS = 400
 OPTIMIZER = Adam(lr=1e-3)
-
-# Archive the configuration
-copyfile(__file__, 'configs/' + SIGNATURE)
 
 loaded = np.load(DATA_FILE)
 raw_brt_vectors = loaded['brt_vectors']

@@ -1,11 +1,11 @@
 import os
 import pprint
 import random
-import numpy as np
-from shapely.geometry import Point
-from wkt2pyplot import save_plot
-from keras.callbacks import Callback
 from datetime import datetime
+
+import numpy as np
+from keras.callbacks import Callback
+from shapely.geometry import Point
 
 from .GeoVectorizer import GeoVectorizer
 from .wkt2pyplot import save_plot
@@ -70,8 +70,10 @@ class DecypherAll(Callback):
             if self.save_plots:
                 input_polys = [GeoVectorizer.decypher(poly) for poly in input_vectors]
                 target_polys = [GeoVectorizer.decypher(target_vectors[0])]
-                prediction_points = [Point(point).wkt for point in
-                                     GeoVectorizer(gmm_size=self.gmm_size).decypher_gmm_geom(prediction_vectors[0], 500)]
+                prediction_points = [
+                    Point(point).wkt for point in
+                    GeoVectorizer(gmm_size=self.gmm_size).decypher_gmm_geom(prediction_vectors[0], 500)
+                ]
 
                 geoms = input_polys, target_polys, prediction_points
                 save_plot(geoms, self.plot_dir, timestamp)

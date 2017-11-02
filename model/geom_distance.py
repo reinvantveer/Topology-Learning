@@ -20,7 +20,7 @@ DATA_FILE = '../files/geodata_vectorized.npz'
 BATCH_SIZE = 512
 TRAIN_VALIDATE_SPLIT = 0.1
 LATENT_SIZE = 128
-EPOCHS = 50
+EPOCHS = 400
 OPTIMIZER = Adam(lr=0.005)
 
 loaded = np.load(DATA_FILE)

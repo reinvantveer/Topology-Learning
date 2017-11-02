@@ -13,7 +13,7 @@ from topoml_util.geom_scaler import localized_normal, localized_mean
 from topoml_util.slack_send import notify
 from matplotlib import pyplot as plt
 
-SCRIPT_VERSION = "0.0.6"
+SCRIPT_VERSION = "0.0.7"
 SCRIPT_NAME = os.path.basename(__file__)
 TIMESTAMP = str(datetime.now()).replace(':', '.')
 SIGNATURE = SCRIPT_NAME + ' ' + TIMESTAMP
@@ -23,7 +23,7 @@ BATCH_SIZE = 512
 TRAIN_VALIDATE_SPLIT = 0.1
 LATENT_SIZE = 128
 EPOCHS = 400
-OPTIMIZER = Adam(lr=1e-2)
+OPTIMIZER = Adam(lr=1e-3)
 
 loaded = np.load(DATA_FILE)
 training_vectors = loaded['input_geoms']
@@ -36,10 +36,8 @@ training_vectors = localized_normal(training_vectors, means, 1e4)
 target_vectors = loaded['geom_distance'][:, 0, :]
 
 inputs = Input(name='Input', shape=(max_points, GEO_VECTOR_LEN))
-model = LSTM(LATENT_SIZE, activation='relu', return_sequences=True)(inputs)
-model = TimeDistributed(Dense(32))(model)
+model = LSTM(LATENT_SIZE, activation='relu')(inputs)
 model = LeakyReLU()(model)
-model = Flatten()(model)
 model = Dense(2)(model)
 model = Model(inputs, model)
 model.compile(

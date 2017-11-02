@@ -35,29 +35,29 @@ copyfile(__file__, 'configs/' + SIGNATURE)
 loaded = np.load(DATA_FILE)
 raw_brt_vectors = loaded['brt_vectors']
 raw_osm_vectors = loaded['osm_vectors']
-raw_target_vectors = loaded['intersection']
+raw_intersection_vectors = loaded['intersection']
 
 brt_vectors = []
 osm_vectors = []
-target_vectors = []
+intersection_vectors = []
 
 # skip non-intersecting geometries
-for brt, osm, target in zip(raw_brt_vectors, raw_osm_vectors, raw_target_vectors):
+for brt, osm, target in zip(raw_brt_vectors, raw_osm_vectors, raw_intersection_vectors):
     if not target[0, 0] == 0:  # a zero coordinate designates an empty geometry
         brt_vectors.append(brt)
         osm_vectors.append(osm)
-        target_vectors.append(target)
+        intersection_vectors.append(target)
 
 # data whitening
-means = localized_mean(target_vectors)
+means = localized_mean(intersection_vectors)
 brt_vectors = localized_normal(brt_vectors, means, 1e4)
 osm_vectors = localized_normal(osm_vectors, means, 1e4)
-target_vectors = localized_normal(target_vectors, means, 1e4)
+intersection_vectors = localized_normal(intersection_vectors, means, 1e4)
 
 # shape determination
 (data_points, brt_max_points, BRT_INPUT_VECTOR_LEN) = brt_vectors.shape
 (_, osm_max_points, OSM_INPUT_VECTOR_LEN) = osm_vectors.shape
-target_max_points = target_vectors.shape[1]
+target_max_points = intersection_vectors.shape[1]
 output_seq_length = (GAUSSIAN_MIXTURE_COMPONENTS * 6) + ONE_HOT_LEN
 output_size_2d = target_max_points * output_seq_length
 
@@ -97,7 +97,7 @@ callbacks = [
 
 history = model.fit(
     x=[brt_vectors, osm_vectors],
-    y=target_vectors,
+    y=intersection_vectors,
     epochs=EPOCHS,
     batch_size=BATCH_SIZE,
     validation_split=TRAIN_VALIDATE_SPLIT,

@@ -5,7 +5,7 @@ import numpy as np
 from keras import Input
 from keras.callbacks import TensorBoard, EarlyStopping
 from keras.engine import Model
-from keras.layers import LSTM, Dense, TimeDistributed
+from keras.layers import LSTM, Dense, TimeDistributed, Flatten
 from keras.optimizers import Adam
 from topoml_util.ConsoleLogger import DecypherAll
 from topoml_util.gaussian_loss import univariate_gaussian_loss
@@ -34,8 +34,9 @@ training_vectors = localized_normal(training_vectors, means, 1e4)
 target_vectors = loaded['geom_distance'][:, 0, :]
 
 inputs = Input(name='Input', shape=(max_points, GEO_VECTOR_LEN))
-model = LSTM(LATENT_SIZE, activation='relu')(inputs)
+model = LSTM(LATENT_SIZE, activation='relu', return_sequences=True)(inputs)
 model = TimeDistributed(Dense(32))(model)
+model = Flatten()(model)
 model = Dense(2)(model)
 model = Model(inputs, model)
 model.compile(

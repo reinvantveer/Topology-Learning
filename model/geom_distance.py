@@ -5,7 +5,7 @@ import numpy as np
 from keras import Input
 from keras.callbacks import TensorBoard, EarlyStopping
 from keras.engine import Model
-from keras.layers import LSTM, Dense, TimeDistributed, Flatten
+from keras.layers import LSTM, Dense, TimeDistributed, Flatten, LeakyReLU
 from keras.optimizers import Adam
 from topoml_util.ConsoleLogger import DecypherAll
 from topoml_util.gaussian_loss import univariate_gaussian_loss
@@ -36,6 +36,7 @@ target_vectors = loaded['geom_distance'][:, 0, :]
 inputs = Input(name='Input', shape=(max_points, GEO_VECTOR_LEN))
 model = LSTM(LATENT_SIZE, activation='relu', return_sequences=True)(inputs)
 model = TimeDistributed(Dense(32))(model)
+model = LeakyReLU()(model)
 model = LSTM(LATENT_SIZE, activation='relu', return_sequences=True)(model)
 model = TimeDistributed(Dense(32))(model)
 model = Flatten()(model)
@@ -60,14 +61,15 @@ history = model.fit(x=training_vectors,
                     validation_split=TRAIN_VALIDATE_SPLIT,
                     callbacks=callbacks).history
 
-prediction = model.predict(training_vectors[0:1000])
+val_set_start = -round(data_points * TRAIN_VALIDATE_SPLIT)
+prediction = model.predict(training_vectors[val_set_start:])
 
 intersecting_target = []
 intersecting_prediction = []
 non_intersecting_target = []
 non_intersecting_prediction = []
 
-for index, _ in enumerate(target_vectors[0:1000]):
+for index, _ in enumerate(target_vectors[val_set_start:]):
     if target_vectors[index, 0] == 0.:
         intersecting_target.append(target_vectors[index])
         intersecting_prediction.append(prediction[index])

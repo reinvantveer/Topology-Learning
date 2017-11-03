@@ -12,6 +12,7 @@ from topoml_util.ConsoleLogger import DecypherAll
 from topoml_util.gaussian_loss import univariate_gaussian_loss
 from topoml_util.geom_scaler import localized_normal, localized_mean
 from topoml_util.slack_send import notify
+from matplotlib import pyplot as plt
 
 SCRIPT_VERSION = "0.1.0"
 SCRIPT_NAME = os.path.basename(__file__)

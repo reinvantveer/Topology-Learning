@@ -1,19 +1,16 @@
-VERSION = "0.02"
-
 import os
 from datetime import datetime
-from shapely.geometry import Polygon, Point
+
 import numpy as np
 from keras import Input
 from keras.callbacks import TensorBoard, EarlyStopping
 from keras.engine import Model
 from keras.layers import LSTM, Dense, RepeatVector
 from keras.optimizers import Adam
-from shutil import copyfile
-
-from topoml_util.LoggerCallback import EpochLogger
-from topoml_util.GeoVectorizer import GeoVectorizer
+from shapely.geometry import Polygon, Point
 from topoml_util.GaussianMixtureLoss import GaussianMixtureLoss
+from topoml_util.GeoVectorizer import GeoVectorizer
+from topoml_util.LoggerCallback import EpochLogger
 from topoml_util.slack_send import notify
 from topoml_util.wkt2pyplot import save_plot
 
@@ -28,9 +25,6 @@ TRAIN_VALIDATE_SPLIT = 0.1
 LATENT_SIZE = 128
 EPOCHS = 400
 OPTIMIZER = Adam(lr=1e-3)
-
-# Archive the configuration
-copyfile(__file__, 'configs/' + SIGNATURE)
 
 loaded = np.load(DATA_FILE)
 training_vectors = loaded['point_sequence']
@@ -62,7 +56,9 @@ callbacks = [
         input_func=lambda x: [Polygon(np.reshape(x, (6, 2))[0:3]).wkt, Polygon(np.reshape(x, (6, 2))[3:]).wkt],
         target_func=lambda x: [GeoVectorizer.decypher(x)],
         predict_func=lambda x: [Point(point).wkt for point in GeoVectorizer(gmm_size=COMPONENTS).decypher_gmm_geom(x)],
-        aggregate_func=lambda x: save_plot(x, timestamp=str(datetime.now()).replace(':', '.'), plot_dir='plots/' + SIGNATURE),
+        aggregate_func=lambda x: save_plot(x,
+                                           timestamp=str(datetime.now()).replace(':', '.'),
+                                           plot_dir='plots/' + SIGNATURE),
         stdout=True),
     EarlyStopping(patience=40, min_delta=1e-3)
 ]

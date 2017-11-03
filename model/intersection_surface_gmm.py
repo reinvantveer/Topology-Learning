@@ -1,4 +1,6 @@
+import os
 from datetime import datetime
+
 import numpy as np
 from keras import Input
 from keras.callbacks import TensorBoard
@@ -11,17 +13,18 @@ from topoml_util.LoggerCallback import EpochLogger
 from topoml_util.geom_scaler import localized_normal, localized_mean
 from topoml_util.GeoVectorizer import GeoVectorizer
 from topoml_util.wkt2pyplot import wkt2pyplot
+from topoml_util.slack_send import notify
 
-# To suppress tensorflow info level messages:
-# export TF_CPP_MIN_LOG_LEVEL=2
-
+SCRIPT_VERSION = "0.0.1"
+SCRIPT_NAME = os.path.basename(__file__)
 TIMESTAMP = str(datetime.now()).replace(':', '.')  # for Windows compat
+SIGNATURE = SCRIPT_NAME + ' ' + TIMESTAMP
 DATA_FILE = '../files/geodata_vectorized.npz'
-BATCH_SIZE = 2048
+BATCH_SIZE = 5122
 TRAIN_VALIDATE_SPLIT = 0.1
 LATENT_SIZE = 128
 EPOCHS = 50
-OPTIMIZER = Adam(lr=1e-4)
+OPTIMIZER = Adam(lr=1e-3)
 
 NUM_COMPONENTS = 10
 
@@ -55,7 +58,7 @@ GMM = GaussianMixtureLoss(NUM_COMPONENTS, max_points)
 model.compile(loss=GMM.univariate_gmm_loss, optimizer=OPTIMIZER)
 model.summary()
 
-tb_callback = TensorBoard(log_dir='./tensorboard_log/' + TIMESTAMP, histogram_freq=1, write_graph=True)
+tb_callback = TensorBoard(log_dir='./tensorboard_log/' + TIMESTAMP, write_graph=False)
 epoch_callback = EpochLogger(
     input_func=GeoVectorizer.decypher,
     target_func=lambda x: str(x),
@@ -64,13 +67,13 @@ epoch_callback = EpochLogger(
     stdout=True
 )
 
-model.fit(
+history = model.fit(
     x=training_vectors,
     y=np.array(target_vectors),
     epochs=EPOCHS,
     batch_size=BATCH_SIZE,
     validation_split=TRAIN_VALIDATE_SPLIT,
-    callbacks=[epoch_callback, tb_callback])
+    callbacks=[epoch_callback, tb_callback]).history
 
 prediction = model.predict(training_vectors[0:1000])
 intersecting_error = np.abs(prediction[:, 0] - target_vectors[0:1000, 0])
@@ -87,7 +90,7 @@ print('Saving top and bottom', plot_samples, 'results as plots, this will take a
 # print('Worst', plot_samples, 'results: ', sorted_results[-plot_samples:])
 for result in sorted_results[-plot_samples:]:
     timestamp = str(datetime.now()).replace(':', '.')
-    plot, fig, ax = wkt2pyplot(result[0])
+    plot, _, ax = wkt2pyplot(result[0])
     plot.text(0.01, 0.06, 'target: ' + str(result[1]), transform=ax.transAxes)
     plot.text(0.01, 0.01, 'prediction: ' + str(result[2]), transform=ax.transAxes)
     plot.savefig('./plot_images/bad_' + timestamp + '.png')
@@ -96,10 +99,11 @@ for result in sorted_results[-plot_samples:]:
 # print('Best', plot_samples, 'results:', sorted_results[0:plot_samples])
 for result in sorted_results[0:plot_samples]:
     timestamp = str(datetime.now()).replace(':', '.')
-    plot, fig, ax = wkt2pyplot(result[0])
+    plot, _, ax = wkt2pyplot(result[0])
     plot.text(0.01, 0.06, 'target: ' + str(result[1]), transform=ax.transAxes)
     plot.text(0.01, 0.01, 'prediction: ' + str(result[2]), transform=ax.transAxes)
     plot.savefig('./plot_images/good_' + timestamp + '.png')
     plot.close()
 
-print('Done!')
+notify(TIMESTAMP, SCRIPT_NAME, 'validation loss of ' + str(history['val_loss'][-1]))
+print(SCRIPT_NAME, 'finished successfully')

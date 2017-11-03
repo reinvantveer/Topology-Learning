@@ -70,7 +70,7 @@ plt.text(0.01, 0.94, r'prediction error $\mu: $' + str(np.round(np.mean(error), 
 plt.text(0.01, 0.88, r'prediction error $\sigma: $' + str(np.round(np.std(error), 4)), transform=ax.transAxes)
 plt.xlabel('Error')
 plt.ylabel('Frequency')
-plt.title('Histogram error frequency')
+plt.title('Geometric distance error')
 n, bins, patches = plt.hist(error, 50, facecolor='g', normed=False, alpha=0.75)
 os.makedirs(str(PLOT_DIR), exist_ok=True)
 plt.savefig(PLOT_DIR + '/plt_' + TIMESTAMP + '.png')
